@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	
+<ui:composition>
+	<b:navBar brand="" brandHref="#" fixed="top" styleClass="header" inverse="true" brand-align="right" id="newMenu" >
+		<b:navbarLinks >
+			<b:navLink value="#{msj.navLinkHome}" outcome="Home" icon="home"></b:navLink>
+		</b:navbarLinks>
+		<b:navbarLinks pull="right">
+		
+			<c:if test="#{generalBean.sesionBean.recurso.isConsultor() || generalBean.sesionBean.recurso.isAsignador() || generalBean.sesionBean.recurso.isGerenteProyecto() }">
+				<b:dropMenu icon-awesome="calendar-o" value="#{msj.navLinkAsignaciones}">
+					<!-- SECCION DE CONSULTOR -->
+					<c:if test="#{generalBean.sesionBean.recurso.isConsultor()}">
+						<b:navLink value="#{msj.navLinkMisAsignaciones}" outcome="consultarHorario" icon-awesome="calendar"></b:navLink>
+					</c:if>
+					<!-- SECCION DE ASIGNADOR -->
+					<c:if test="#{generalBean.sesionBean.recurso.isAsignador()}">
+						<b:navLink />
+						<b:navLink value="#{msj.navLinkAdministrar}" outcome="administrarHorarios" icon-awesome="calendar-check-o"></b:navLink>
+						<!-- <b:navLink value="#{msj.navLinkNuevaAsignacion}" outcome="nuevaAsignacion" icon-awesome="calendar-plus-o"></b:navLink> -->
+					</c:if>
+					<!-- SECCION DE GERENTE DE PROYECTOS -->
+					<c:if test="#{generalBean.sesionBean.recurso.isGerenteProyecto()}">
+						<b:navLink value="#{msj.navLinkSugerirAct}" outcome="sugerirActividadesSemanas" icon-awesome="lightbulb-o"></b:navLink>
+					</c:if>
+				</b:dropMenu>
+			</c:if>
+			
+			<!-- SECCION DE ADMINISTRACION -->
+			<c:if test="#{generalBean.sesionBean.recurso.isAdmin()}">
+				<b:dropMenu icon-awesome="line-chart" value="#{msj.navLinkReportes}">
+					<b:navLink value="#{msj.navLinkReporteHorasProyecto}" outcome="reporteHorasProyecto" icon-awesome="pie-chart"></b:navLink>
+					<!-- <b:navLink value="#{msj.navLinkReporteHitos}" outcome="reporteHitos" icon-awesome="bar-chart"></b:navLink>
+					<b:navLink value="#{msj.navLinkReporteHorasCliente}" outcome="reporteHorasCliente" icon-awesome="pie-chart"></b:navLink>
+					<b:navLink value="#{msj.navLinkReporteHorasFase}" outcome="reporteHorasCliente" icon-awesome="area-chart"></b:navLink>
+					<b:navLink value="#{msj.navLinkReporteHorasConsultor}" outcome="reporteHorasCliente" icon-awesome="line-chart"></b:navLink>-->
+				</b:dropMenu>
+			
+				<b:dropMenu icon="th" value="Administrar">
+					<b:navLink value="#{msj.navLinkTipoActividad}" outcome="TipoActividad"></b:navLink>
+					<b:navLink value="#{msj.navLinkActividadInterna}" outcome="ActividadInterna"></b:navLink>
+					<b:navLink value="#{msj.navLinkArea}" outcome="Area"></b:navLink>
+					<b:navLink value="#{msj.navLinkCargo}" outcome="Cargo"></b:navLink>
+					<b:navLink value="#{msj.navLinkRol}" outcome="Rol"></b:navLink>
+					<b:navLink value="#{msj.navLinkCliente}" outcome="Cliente"></b:navLink>
+					<b:navLink value="#{msj.navLinkProyecto}" outcome="Proyecto">
+					</b:navLink>
+					
+					<b:navLink></b:navLink>
+					<b:navLink value="#{msj.navLinkUsuarios}" outcome="Recurso" actionListener="#{recurso.refreshTable()}">
+					</b:navLink>
+				</b:dropMenu>
+			</c:if>
+			
+			<!-- SECCION DE USUARIO -->
+			<b:dropMenu icon="user" value="#{generalBean.sesionBean.nombreUser}">
+				<b:navLink value="#{generalBean.sesionBean.recurso.nombreCompleto}"></b:navLink>
+				<b:navLink header="#{generalBean.sesionBean.recurso.nombreRoles}"></b:navLink>
+				<b:navLink />
+				<b:navLink value="#{msj.navLinkReporte}" outcome="ReporteHoras" icon="time"></b:navLink>
+				<b:navLink value="#{msj.navLinkPerfil}" outcome="TipoActividad" icon="eye-open"></b:navLink>
+				<li style="cursor:pointer;">
+					<a href="#{request.contextPath}/logout" data-toggle="tooltip" role="menuitem" tabindex="-1">
+						<span><i class="glyphicon glyphicon-log-out"></i></span> #{msj.navLinkCerrarSesion}
+					</a>
+				</li>
+			</b:dropMenu>
+			
+		</b:navbarLinks>
+	</b:navBar>
+</ui:composition>
+</html>

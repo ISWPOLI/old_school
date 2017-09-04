@@ -22,7 +22,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/ProjectHistoryEJB"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ProjectHistoryJPA"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ProjectHistoryEJBClient"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

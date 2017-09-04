@@ -4,8 +4,9 @@
 	<comment></comment>
 	<projects>
 		<project>ProjectHistory</project>
-		<project>ProjectHistoryEJB</project>
 		<project>ProjectHistoryJPA</project>
+		<project>ProjectHistoryEJB</project>
+		<project>ProjectHistoryEJBClient</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

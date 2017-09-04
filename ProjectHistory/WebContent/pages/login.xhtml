@@ -19,22 +19,22 @@
 						<b:panel>
 							<b:row>
 								<b:column offset="1" large-screen="10">
-									<b:inputText placeholder="Nombre de usuario" label="Nombre de usuario"  />
+									<b:inputText placeholder="Nombre de usuario" label="Nombre de usuario" value="#{loginBean.user}" />
 								</b:column>
 							</b:row>
 							<b:row>
 								<b:column offset="1" large-screen="10">
-									<b:inputSecret label="Contraseña" placeholder="Contraseña" />
+									<b:inputSecret label="Contraseña" placeholder="Contraseña" value="#{loginBean.pass}" />
 								</b:column>
 							</b:row>
 							<b:row>
 								<b:column offset="1" large-screen="10">
-									<h:commandButton value="Iniciar sesión" styleClass="btn-success-blanco" />
+									<h:commandButton value="Iniciar sesión" styleClass="btn-success-blanco" action="#{loginBean.iniciarSesion()}" />
 								</b:column>
 							</b:row>
 							<b:row style="margin-top: 5px;">
 								<b:column offset="1" large-screen="10">
-									<h:commandButton value="Olvido mi contraseña" styleClass="btn-primary-blanco" />
+									<h:commandButton value="Olvidé mi contraseña" styleClass="btn-primary-blanco" />
 								</b:column>
 							</b:row>
 						</b:panel>

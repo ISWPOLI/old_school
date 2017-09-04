@@ -251,3 +251,20 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+
+
+
+
+/*INSERTS*/
+INSERT INTO `project_history`.`rol` VALUES (1, 'Administrador', 'Este perfil tiene permisos sobre todos los módulos', 1);
+INSERT INTO `project_history`.`rol` VALUES (2, 'Consultor', 'Este perfil tiene permisos para consultar', 1);
+INSERT INTO `project_history`.`rol` VALUES (3, 'Aprobador', 'Este perfil tiene permisos para aprobar', 1);
+
+INSERT INTO `project_history`.`usuario` VALUES (1, 'Joel', 'Pulido G', 'M', 'joel', '87373df3f89fa9932a9c6c58cc75e309', 1, '2017-09-03 00:00:00');
+
+INSERT INTO `project_history`.`rol_usuario` VALUES (1, 1);
+INSERT INTO `project_history`.`rol_usuario` VALUES (1, 2);
+INSERT INTO `project_history`.`rol_usuario` VALUES (1, 3);

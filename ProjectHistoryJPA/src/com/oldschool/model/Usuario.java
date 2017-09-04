@@ -11,7 +11,12 @@ import java.util.List;
  * 
  */
 @Entity
-@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u")
+@NamedQueries({
+	@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u"),
+	@NamedQuery(name="Usuario.findIdByUser", query="SELECT u.id_usuario FROM Usuario u WHERE u.login = :login"),
+	@NamedQuery(name="Usuario.login", query="SELECT u FROM Usuario u WHERE u.login = :login AND u.contraseña = :pass")
+	
+})
 public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -43,7 +48,8 @@ public class Usuario implements Serializable {
 	private List<Proyecto> proyectos;
 
 	//bi-directional many-to-many association to Rol
-	@ManyToMany(mappedBy="usuarios")
+	//@ManyToMany(mappedBy="usuarios")
+	@ManyToMany(mappedBy="usuarios", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private List<Rol> rols;
 
 	public Usuario() {
@@ -165,4 +171,48 @@ public class Usuario implements Serializable {
 		this.rols = rols;
 	}
 
+	public String getNombreCompleto() {
+		return nombre_Usuario + " " + apellido;
+	}
+	
+	public String getNombreRoles(){
+		StringBuilder nombresRoles = new StringBuilder();
+		for (Rol rol : this.rols) {
+			if(nombresRoles.length() != 0){
+				nombresRoles.append(", ");
+			}
+			nombresRoles.append(rol.getNombre_Rol());
+		}
+		return nombresRoles.toString();
+	}
+	
+	/*Roles*/
+	public boolean isAdmin(){
+		for (Rol rol : this.rols) {
+			if(rol.getNombre_Rol().toUpperCase().equals(Rol.ROL_ADMINISTRADOR.toUpperCase())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isConsultor(){
+		for (Rol rol : this.rols) {
+			if(rol.getNombre_Rol().toUpperCase().equals(Rol.ROL_CONSULTOR.toUpperCase())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isAprobador(){
+		for (Rol rol : this.rols) {
+			if(rol.getNombre_Rol().toUpperCase().equals(Rol.ROL_APROBADOR.toUpperCase())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 }

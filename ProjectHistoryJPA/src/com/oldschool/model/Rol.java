@@ -14,6 +14,10 @@ import java.util.List;
 public class Rol implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static String ROL_ADMINISTRADOR = "Administrador";
+	public static String ROL_CONSULTOR = "Consultor";
+	public static String ROL_APROBADOR = "Aprobador";
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id_Rol;

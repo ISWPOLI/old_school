@@ -15,7 +15,7 @@
 			<!-- MENU ADMIN -->
 			<c:if test="#{loginBean.sesionBean.usuario.isAdmin()}">
 				<b:dropMenu icon-awesome="th" value="Administrar">
-					<b:navLink value="Usuarios" icon-awesome="users"></b:navLink>
+					<b:navLink value="Usuarios" icon-awesome="users" outcome="control-usuarios"></b:navLink>
 					<b:navLink value="Clientes" icon-awesome="handshake-o"></b:navLink>
 					<b:navLink value="Areas" icon-awesome="cubes"></b:navLink>
 					<b:navLink value="Documentos" icon-awesome="file-text"></b:navLink>
@@ -35,7 +35,7 @@
 				<b:navLink value="#{loginBean.sesionBean.usuario.nombreCompleto}" iconAwesome="id-card-o" ></b:navLink>
 				<b:navLink header="#{loginBean.sesionBean.usuario.nombreRoles}"></b:navLink>
 				<b:navLink />
-				<b:navLink value="Cerrar sesión" action="#{loginBean.cerrarSesion()}" iconAwesome="sign-out"></b:navLink>
+				<b:navLink value="Cerrar sesión" actionListener="#{loginBean.cerrarSesion()}" iconAwesome="sign-out"></b:navLink>
 			</b:dropMenu>
 			
 		</b:navbarLinks>

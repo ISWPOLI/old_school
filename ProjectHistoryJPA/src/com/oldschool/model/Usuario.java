@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u"),
+	@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u ORDER BY u.activo DESC"),
 	@NamedQuery(name="Usuario.findIdByUser", query="SELECT u.id_usuario FROM Usuario u WHERE u.login = :login"),
 	@NamedQuery(name="Usuario.login", query="SELECT u FROM Usuario u WHERE u.login = :login AND u.contraseña = :pass")
 	
@@ -20,6 +20,9 @@ import java.util.List;
 public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static final byte ESTADO_ACTIVO = 1; 
+	public static final byte ESTADO_INACTIVO = 0;
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id_usuario;
@@ -49,7 +52,7 @@ public class Usuario implements Serializable {
 
 	//bi-directional many-to-many association to Rol
 	//@ManyToMany(mappedBy="usuarios")
-	@ManyToMany(mappedBy="usuarios", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+	@ManyToMany(mappedBy="usuarios", fetch=FetchType.EAGER)
 	private List<Rol> rols;
 
 	public Usuario() {

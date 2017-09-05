@@ -31,27 +31,25 @@ public class LoginBean implements Serializable {
 	private String pass;
 	
 	/*Métodos privados*/
-	private String encriptarPass() throws Exception{
-		//Consultar ID para generar semilla
-		int idUsuario = ejbLogin.getIdByUser(user);
-		//Implantar semilla
-		String newPass = idUsuario + pass + idUsuario;
-		//Encriptar MD5
-		String newEncPass = Util.generateMD5(newPass);
-		//System.out.println(newEncPass);
-		
-		return newEncPass;
-	}
 	
 	/*Métodos públicos*/
 	@PostConstruct
 	public void init(){
-		
+		try {
+//			System.out.println("joel: " + Util.encriptarPass("joel", "123"));
+//			System.out.println("mpcamacho: " + Util.encriptarPass("mpcamacho", "123"));
+//			System.out.println("amdiaz: " + Util.encriptarPass("amdiaz", "123"));
+//			System.out.println("rmontanez: " + Util.encriptarPass("rmontanez", "123"));
+//			System.out.println("jgomez: " + Util.encriptarPass("jgomez", "123"));
+//			System.out.println("samuel: " + Util.encriptarPass("samuel", "123"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String iniciarSesion(){
 		try {
-			String encPass = encriptarPass();
+			String encPass = Util.encriptarPass(this.user, this.pass);
 			Usuario usuario = ejbLogin.iniciarSesion(user, encPass);
 			if(usuario!=null){
 				sesionBean.setNombreUser(user);

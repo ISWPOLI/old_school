@@ -543,9 +543,6 @@ div.bienvenido .cards{
 }
 
 
-
-    
-
 /*NEGRO: #343a40*/
 .panel-negro .panel-heading{
     border-color: #343a40;
@@ -676,3 +673,8 @@ div.bienvenido .cards{
     padding: 10px 20px;
 }
 
+/*Tablas*/
+th{
+	background: #9a9a9a;
+    color: #fff;
+}

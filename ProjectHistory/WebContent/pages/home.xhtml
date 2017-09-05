@@ -15,7 +15,7 @@
 	
 	<ui:define name="full-content">
 		<div class="bienvenido">
-			<b:row><h1>Bienvenido [nombre usuario] al App de asignaciones</h1></b:row>
+			<b:row><h1>Bienvenido #{loginBean.sesionBean.usuario.nombreCompleto} al App de asignaciones</h1></b:row>
 			<b:row><h3>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</h3></b:row>
 			<b:row styleClass="cards">
 				<b:column col-lg="3">

@@ -22,6 +22,13 @@ SET time_zone = "+00:00";
 -- Base de datos: `project_history`
 --
 
+-- -----------------------------------------------------
+-- Schema project_history
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `project_history` DEFAULT CHARACTER SET latin1 ;
+SHOW WARNINGS;
+USE `project_history` ;
+
 -- --------------------------------------------------------
 
 --
@@ -42,10 +49,10 @@ CREATE TABLE `area` (
 CREATE TABLE `cliente` (
   `Id_Cliente` int(11) NOT NULL,
   `Razon_Social` varchar(60) NOT NULL,
-  `Nit` int(15) NOT NULL,
-  `Direccion` varchar(100) NOT NULL,
-  `Telefono` int(11) NOT NULL,
-  `Email` varchar(20) NOT NULL,
+  `Nit` int(15),
+  `Direccion` varchar(100),
+  `Telefono` int(11),
+  `Email` varchar(20),
   `Activo` bit(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Tabla donde se registran los clientes';
 
@@ -88,7 +95,7 @@ CREATE TABLE `proyecto` (
 CREATE TABLE `rol` (
   `Id_Rol` int(11) NOT NULL,
   `Nombre_Rol` varchar(30) NOT NULL,
-  `Descripcion_Rol` varchar(50) NOT NULL,
+  `Descripcion_Rol` varchar(50),
   `Activo` bit(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Listado de roles';
 
@@ -112,7 +119,7 @@ CREATE TABLE `rol_usuario` (
 CREATE TABLE `tipo_documento` (
   `Id_Tipo_Documento` int(11) NOT NULL,
   `Nombre_Tipo_Documento` varchar(30) NOT NULL,
-  `Plantilla` blob NOT NULL
+  `Plantilla` blob
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -128,8 +135,8 @@ CREATE TABLE `usuario` (
   `Genero` varchar(15) NOT NULL,
   `Login` varchar(20) NOT NULL,
   `Contraseña` varchar(100) NOT NULL,
-  `Activo` bit(3) NOT NULL,
-  `Fecha_Ultimo_Acceso` datetime NOT NULL
+  `Fecha_Ultimo_Acceso` datetime,
+  `Activo` bit(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Tabla donde se almacen todos los usuarios ';
 
 --
@@ -194,6 +201,12 @@ ALTER TABLE `usuario`
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
+
+--
+-- AUTO_INCREMENT de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `Id_usuario` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `area`
@@ -263,7 +276,7 @@ INSERT INTO `project_history`.`rol` VALUES (1, 'Administrador', 'Este perfil tie
 INSERT INTO `project_history`.`rol` VALUES (2, 'Consultor', 'Este perfil tiene permisos para consultar', 1);
 INSERT INTO `project_history`.`rol` VALUES (3, 'Aprobador', 'Este perfil tiene permisos para aprobar', 1);
 
-INSERT INTO `project_history`.`usuario` VALUES (1, 'Joel', 'Pulido G', 'M', 'joel', '87373df3f89fa9932a9c6c58cc75e309', 1, '2017-09-03 00:00:00');
+INSERT INTO `project_history`.`usuario` VALUES (1, 'Joel', 'Pulido G', 'M', 'joel', 'c0b84d1ccb798a5d7b82a2af42203428', '2017-09-03 00:00:00', 1);
 
 INSERT INTO `project_history`.`rol_usuario` VALUES (1, 1);
 INSERT INTO `project_history`.`rol_usuario` VALUES (1, 2);

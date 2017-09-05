@@ -6,12 +6,6 @@ $(document).ready(function(){
 function igualarAltoItems(objeto){
     var maxHeight = 150;
     //CICLO IMG
-    // objeto.each(function(i){
-    //  var obj = $(this);
-    //  if(obj.height()>maxHeight){
-    //      maxHeight = obj.height();
-    //  }
-    // });
     for (var i = objeto.length - 1; i >= 0; i--) {
         var obj = $(objeto[i]);
         if(obj.height()>maxHeight){
@@ -23,6 +17,12 @@ function igualarAltoItems(objeto){
     objeto.css("min-height",maxHeight);
 }
 
+function ocultarPrimeraFilaTabla(){
+//	setTimeout(function(){
+		$("#form\\:fila-tabla-sin-menu .row").first().hide();		
+//	}, 500);
+}
+
 function aplicarColorHorario(){
 	setTimeout(function(){
 		if($(".fc-event-container > a").length > 0){
@@ -32,18 +32,12 @@ function aplicarColorHorario(){
 				for (var i = 0; i < clases.length; i++) {
 					var clase = clases[i];
 					if(clase.match(/clase-.*/)){
-						//console.log(clase);
 						var color = clase.split('-')[1];
-						//console.log(color);
-						//console.log($('.'+clase));
 						$('.'+clase).css("background", '#'+color);
 						$('.'+clase).css("border", "none");
-						//console.log("Termino");
 					}
 				}
 			});			
-		}else{
-			//console.log("vacio");
 		}
 	},500);
 }
@@ -51,7 +45,6 @@ function aplicarColorHorario(){
 function botonesHorario(){
 	$(".fc-toolbar").find("button").each(function(){
 		$(this).click(function(){
-			//console.log($(this));
 			aplicarColorHorario();
 		})
 	});	

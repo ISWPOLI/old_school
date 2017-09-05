@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="../../templates/defaultLayout.xhtml">
+	<ui:define name="title">
+		<h:outputText value="Control de usuarios" />
+	</ui:define>
+	
+	<!-- Título pantalla -->
+	<ui:define name="titulo">
+		<b:row>
+			<h2>Control de usuarios</h2>
+		</b:row>
+	</ui:define>
+	<!-- Miga de pan -->
+	<ui:define name="breadcrumb">
+		<b:row>
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><h:link outcome="home">Inicio</h:link></li>
+			  <li class="breadcrumb-item active">Control de usuarios</li>
+			</ol>
+		</b:row>
+	</ui:define>
+	
+	<!-- Contenido de página -->
+	<ui:define name="content">
+		<h:form id="form" styleClass="form-horizontal" >
+			
+			<b:row>
+				<b:column>
+					<b:panel collapsible="false" styleClass="panel-negro" >
+						<f:facet name="heading">
+							<i class="fa fa-filter" style="padding-right: 10px" />
+							<h:outputText value="Filtro de usuarios" />
+						</f:facet>
+						<b:row>
+							<b:column large-screen="3">
+								<h:outputLabel value="Digite el nombre del usuario que desea filtrar" />
+							</b:column>
+							<b:column large-screen="5">
+								<b:inputText placeholder="Ej: Daniel Rodriguez" />
+							</b:column>
+							<b:column large-screen="2">
+								<b:commandButton value="Filtrar usuarios" look="primary" class="btn-primary-blanco" iconAwesome="search" />
+							</b:column>
+							<b:column largeScreen="2">
+								<b:button ajax="true" value="Nuevo usuario" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevoUsuario').modal()" />
+							</b:column>
+						</b:row>
+					</b:panel>
+				</b:column>
+
+
+			</b:row>
+			
+			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
+				<b:dataTable id="tabla" value="#{usuariosBean.listaUsuarios}" styleClass="no-length-menu" var="usuario" lang="es" border="false" searching="false" pageLength="10">
+					<b:dataTableColumn label="Nombre" value="#{usuario.nombreCompleto}" order="asc" />
+					<b:dataTableColumn label="Genero" value="#{usuario.genero eq 'M'? 'Masculino' : 'Femenino'}" />
+					<b:dataTableColumn label="Ultimo acceso" value="#{usuario.fecha_Ultimo_Acceso}" />
+					<b:dataTableColumn label="Estado" value="#{usuario.activo==1? 'Activo' : 'No Activo'}" />
+					<b:dataTableColumn label="Opciones">
+						<h:commandLink action="#{usuariosBean.editarUsuario()}" >
+							<b:iconAwesome name="pencil" />
+						</h:commandLink>
+						<h:commandLink action="#{usuariosBean.editarUsuario()}" >
+							<b:iconAwesome name="trash-o" />
+						</h:commandLink>
+					</b:dataTableColumn>
+				</b:dataTable>
+			</b:row>
+			
+			<!-- MODAL AGREGAR -->
+			<b:modal id="modalNuevoUsuario" title="Nuevo usuario" styleClass="modalNuevoUsuario" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="3"><label>Nombre(s)</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Nombre" value="#{usuariosBean.usuarioSeleccionado.nombre_Usuario}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Apellidos</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Apellidos" value="#{usuariosBean.usuarioSeleccionado.apellido}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Genero</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:selectOneMenu value="#{usuariosBean.usuarioSeleccionado.genero}">
+									<f:selectItem itemValue="M" itemLabel="Masculino" />
+									<f:selectItem itemValue="F" itemLabel="Femenino" />
+								</b:selectOneMenu>
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Usuario</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Nombre de usuario" value="#{usuariosBean.username}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Contraseña</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputSecret placeholder="Contraseña" value="#{usuariosBean.pass}" />
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{usuariosBean.crearUsuario()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<script>
+				$(document).ready( ocultarPrimeraFilaTabla() );
+			</script>
+		
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

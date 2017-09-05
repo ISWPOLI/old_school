@@ -6,6 +6,14 @@ import java.security.NoSuchAlgorithmException;
 
 public class Util {
 
+	public static String encriptarPass(String username, String pass) throws Exception{
+		//Implantar semilla
+		String newPass = username + pass + username;
+		//Encriptar MD5
+		String newEncPass = Util.generateMD5(newPass);
+		return newEncPass;
+	}
+	
 	public static String generateMD5(String input) {
 		try {
 			 MessageDigest md = MessageDigest.getInstance("MD5");
@@ -21,5 +29,13 @@ public class Util {
 			 throw new RuntimeException(e);
 		 }
 	 }
+	
+	public static boolean isEmpty(String cadena){
+		if(cadena!=null && cadena.length()>0){
+			return false;
+		}else{
+			return true;
+		}
+	}
 
 }

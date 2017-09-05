@@ -43,11 +43,17 @@
 							<b:column large-screen="3">
 								<h:outputLabel value="Digite el nombre del usuario que desea filtrar" />
 							</b:column>
-							<b:column large-screen="5">
-								<b:inputText placeholder="Ej: Daniel Rodriguez" />
+							<b:column large-screen="3">
+								<b:inputText placeholder="Ej: Daniel Rodriguez" value="#{usuariosBean.filtroNombre}" />
 							</b:column>
 							<b:column large-screen="2">
-								<b:commandButton value="Filtrar usuarios" look="primary" class="btn-primary-blanco" iconAwesome="search" />
+								<b:selectOneMenu value="#{usuariosBean.filtroEstado}">
+									<f:selectItem itemValue="A" itemLabel="Activo" />
+									<f:selectItem itemValue="I" itemLabel="Inactivo" />
+								</b:selectOneMenu>
+							</b:column>
+							<b:column large-screen="2">
+								<b:commandButton value="Filtrar usuarios" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{usuariosBean.filtrarUsuario()}" update="form:tabla" />
 							</b:column>
 							<b:column largeScreen="2">
 								<b:button ajax="true" value="Nuevo usuario" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevoUsuario').modal()" />

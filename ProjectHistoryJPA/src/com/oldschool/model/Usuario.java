@@ -13,8 +13,11 @@ import java.util.List;
 @Entity
 @NamedQueries({
 	@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u ORDER BY u.activo DESC"),
+	@NamedQuery(name="Usuario.findByEstado", query="SELECT u FROM Usuario u WHERE u.activo = :estado"),
 	@NamedQuery(name="Usuario.findIdByUser", query="SELECT u.id_usuario FROM Usuario u WHERE u.login = :login"),
-	@NamedQuery(name="Usuario.login", query="SELECT u FROM Usuario u WHERE u.login = :login AND u.contraseña = :pass")
+	@NamedQuery(name="Usuario.login", query="SELECT u FROM Usuario u WHERE u.login = :login AND u.contraseña = :pass"),
+	@NamedQuery(name="Usuario.findByNombres", query="SELECT u FROM Usuario u WHERE LOWER(u.nombre_Usuario) LIKE :nombre OR LOWER(u.apellido) LIKE :apellido"),
+	@NamedQuery(name="Usuario.findByNombresYEstado", query="SELECT u FROM Usuario u WHERE (LOWER(u.nombre_Usuario) LIKE :nombre OR LOWER(u.apellido) LIKE :apellido) AND u.activo = :estado ")
 	
 })
 public class Usuario implements Serializable {

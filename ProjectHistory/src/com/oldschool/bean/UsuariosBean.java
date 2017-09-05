@@ -38,12 +38,15 @@ public class UsuariosBean implements Serializable {
 	//Formulario de registro
 	private String username;
 	private String pass;
+	//Filtro usuario
+	private String filtroNombre;
+	private String filtroEstado;
 	
 	/*Métodos privados*/
-	@SuppressWarnings("unchecked")
-	private void cargarListaUsuarios(){
+	private void cargarListaUsuarios(byte estado){
 		try {
-			listaUsuarios = (List<Usuario>)(List<?>)ejbGenerico.listarTodo(new Usuario());
+			listaUsuarios = ejbUsuarios.listarUsuarios(estado);
+//			listaUsuarios = (List<Usuario>)(List<?>)ejbGenerico.listarTodo(new Usuario());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,7 +56,7 @@ public class UsuariosBean implements Serializable {
 	@PostConstruct
 	public void init(){
 		limpiar();
-		cargarListaUsuarios();
+		cargarListaUsuarios(Usuario.ESTADO_ACTIVO);
 	}
 	
 	public void limpiar(){
@@ -61,6 +64,7 @@ public class UsuariosBean implements Serializable {
 		this.usuarioSeleccionado = new Usuario();
 		this.username = null;
 		this.pass = null;
+		this.filtroNombre = null;
 	}
 	
 	public void crearUsuario(){
@@ -100,7 +104,7 @@ public class UsuariosBean implements Serializable {
 					if(resultado){
 						Mensaje.mostrarMensaje(Mensaje.INFO, "Se registró el usuario correctamente");
 						limpiar();
-						cargarListaUsuarios();
+						cargarListaUsuarios(Usuario.ESTADO_ACTIVO);
 					}else{
 						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error creando el usuario, por favor intentelo de nuevo más tarde.");
 					}
@@ -112,6 +116,26 @@ public class UsuariosBean implements Serializable {
 			
 		} catch (Exception e) {
 			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+			e.printStackTrace();
+		}
+	}
+	
+	public void filtrarUsuario(){
+		try {
+			//Por defecto busca los activos
+			byte estado = Usuario.ESTADO_ACTIVO;
+			//En caso de que se seleccione inactivo
+			if(this.filtroEstado.equals("I")){
+				estado = Usuario.ESTADO_INACTIVO;
+			}
+			//Filtro de nombre
+			if(!Util.isEmpty(filtroNombre)){
+				this.listaUsuarios = ejbUsuarios.filtrarUsuariosPorNombreYEstado(filtroNombre, estado);
+			}else{
+				//Mostrar todo
+				cargarListaUsuarios(estado);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -150,5 +174,17 @@ public class UsuariosBean implements Serializable {
 	}
 	public void setPass(String pass) {
 		this.pass = pass;
+	}
+	public String getFiltroNombre() {
+		return filtroNombre;
+	}
+	public void setFiltroNombre(String filtroNombre) {
+		this.filtroNombre = filtroNombre;
+	}
+	public String getFiltroEstado() {
+		return filtroEstado;
+	}
+	public void setFiltroEstado(String filtroEstado) {
+		this.filtroEstado = filtroEstado;
 	}
 }

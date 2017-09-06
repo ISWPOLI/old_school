@@ -7,10 +7,13 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.servlet.http.HttpSession;
 
 import com.oldschool.ejb.EjbGenericoLocal;
 import com.oldschool.ejb.EjbLoginLocal;
 import com.oldschool.model.Usuario;
+import com.oldschool.sesion.HttpResourcesBean;
+import com.oldschool.util.Constantes;
 import com.oldschool.util.Mensaje;
 import com.oldschool.util.Util;
 
@@ -35,11 +38,7 @@ public class LoginBean implements Serializable {
 	/*Métodos privados*/
 	private void actualizarFechaDeAcceso(int idUsuario){
 		try {
-//			Usuario temp = new Usuario();
-//			temp.setId_usuario(idUsuario);
-//			temp.setFecha_Ultimo_Acceso(new Date());
 			if(ejbLogin.actualizarFechaAcceso(idUsuario)){
-//			if(ejbGenerico.actualizarObjeto(temp)){
 				System.out.println("Se actualizó la última fecha de acceso correctamente");
 			}else{
 				System.out.println("No se logró actualizar la última fecha de acceso");
@@ -64,14 +63,24 @@ public class LoginBean implements Serializable {
 			String encPass = Util.encriptarPass(this.user, this.pass);
 			Usuario usuario = ejbLogin.iniciarSesion(user, encPass);
 			if(usuario!=null){
-				//Session Bean
+				
+				//ASIGNAR AL HTTPSESSION
+				HttpSession session = HttpResourcesBean.getSession();
+				session.setAttribute(Constantes.USER_ID, usuario.getId_usuario());
+				session.setAttribute(Constantes.USER_NAME, user);
+				session.setAttribute(Constantes.USER_IS_ADMIN, usuario.isAdmin());
+				session.setAttribute(Constantes.USER_IS_CONSL, usuario.isConsultor());
+				session.setAttribute(Constantes.USER_IS_APROB, usuario.isAprobador());
+				
+				//ASIGNAR A SESIONBEAN
 				sesionBean.setNombreUser(user);
 				sesionBean.setUsuario(usuario);
-				//Actualizar
+				
+				//ACTUALIZAR ULTIMA FECHA DE ACCESO
 				actualizarFechaDeAcceso(usuario.getId_usuario());
-				//Mensaje de confirmacion
+				//MENSAJE DE CONFIRMACION
 				Mensaje.mostrarMensaje(Mensaje.INFO, "Bienvenido " + user);
-				//Retorno
+				//RETORNO
 				return "home-page";
 			}else{
 				Mensaje.mostrarMensaje(Mensaje.WARN, "Usuario o contraseña incorrecta.");
@@ -83,9 +92,18 @@ public class LoginBean implements Serializable {
 	}
 	
 	public String cerrarSesion(){
+		//HTTPSESSION
+		HttpSession session = HttpResourcesBean.getSession();
+		session.invalidate();
+		//SESIONBEAN
 		this.sesionBean.setUsuario(null);
 		this.sesionBean.setNombreUser(null);
+		//RETORNO
 		return "login-page";
+	}
+	
+	public String irAHome(){
+		return "home";
 	}
 	
 	/*Get & Set*/

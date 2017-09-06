@@ -678,3 +678,41 @@ th{
 	background: #9a9a9a;
     color: #fff;
 }
+/*Botón cerrar sesión*/
+li.cerrar-sesion {
+    display: block;
+    /*padding: 3px 20px;*/
+    clear: both;
+    font-weight: normal;
+    line-height: 1.428571429;
+    color: #333333;
+    white-space: nowrap;
+    text-decoration: none;
+}
+.cerrar-sesion > a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.428571429;
+    color: #333333;
+    white-space: nowrap;
+}
+.cerrar-sesion > a:hover {
+    background-image: -webkit-linear-gradient(top, #f5f5f5 0%, #e8e8e8 100%);
+    background-image: -o-linear-gradient(top, #f5f5f5 0%, #e8e8e8 100%);
+    background-image: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#ffe8e8e8', GradientType=0);
+    background-color: #e8e8e8;
+
+	text-decoration: none;
+    color: #262626;
+    background-color: #f5f5f5;
+}
+/*Iconos tabla*/
+.opciones-tabla{
+	color: #0366d6;
+	margin: 5px;
+	font-size: 14px;
+}

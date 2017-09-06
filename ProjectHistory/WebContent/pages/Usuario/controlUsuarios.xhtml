@@ -5,7 +5,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:b="http://bootsfaces.net/ui" xmlns:p="http://primefaces.org/ui">
+	xmlns:b="http://bootsfaces.net/ui" 
+	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="../../templates/defaultLayout.xhtml">
 	<ui:define name="title">
@@ -68,22 +69,82 @@
 			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
 				<b:dataTable id="tabla" value="#{usuariosBean.listaUsuarios}" styleClass="no-length-menu" var="usuario" lang="es" border="false" searching="false" pageLength="10">
 					<b:dataTableColumn label="Nombre" value="#{usuario.nombreCompleto}" order="asc" />
+					<b:dataTableColumn label="Usuario" value="#{usuario.login}" />
 					<b:dataTableColumn label="Genero" value="#{usuario.genero eq 'M'? 'Masculino' : 'Femenino'}" />
 					<b:dataTableColumn label="Ultimo acceso" value="#{usuario.fecha_Ultimo_Acceso}" />
-					<b:dataTableColumn label="Estado" value="#{usuario.activo==1? 'Activo' : 'No Activo'}" />
+					<b:dataTableColumn label="Estado" value="#{usuario.activo==1? 'Activo' : 'Inactivo'}" />
 					<b:dataTableColumn label="Opciones">
-						<h:commandLink action="#{usuariosBean.editarUsuario()}" >
-							<b:iconAwesome name="pencil" />
-						</h:commandLink>
-						<h:commandLink action="#{usuariosBean.editarUsuario()}" >
-							<b:iconAwesome name="trash-o" />
-						</h:commandLink>
+						<!-- USUARIOS ACTIVOS -->
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarUsuario').modal()" update="form:modalEditarUsuario" rendered="#{usuario.activo==1}" >
+							<b:iconAwesome name="pencil" tooltip="Editar usuario" />
+							<f:setPropertyActionListener value="#{usuario}" target="#{usuariosBean.usuarioSeleccionado}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalInhabilitarUsuario').modal()" update="form:modalInhabilitarUsuario" rendered="#{usuario.activo==1}" >
+							<b:iconAwesome name="hand-o-down" tooltip="Inhabilitar usuario" />
+							<f:setPropertyActionListener value="#{usuario}" target="#{usuariosBean.usuarioSeleccionado}" />
+						</p:commandLink>
+						<!-- USUARIOS INACTIVOS -->
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalReActivarUsuario').modal()" update="form:modalReActivarUsuario" rendered="#{usuario.activo==0}" >
+							<b:iconAwesome name="hand-o-up" tooltip="re-activar usuario" />
+							<f:setPropertyActionListener value="#{usuario}" target="#{usuariosBean.usuarioSeleccionado}" />
+						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>
 			</b:row>
 			
 			<!-- MODAL AGREGAR -->
 			<b:modal id="modalNuevoUsuario" title="Nuevo usuario" styleClass="modalNuevoUsuario" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="3"><label>Nombre(s)</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Nombre" value="#{usuariosBean.nombre}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Apellidos</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Apellidos" value="#{usuariosBean.apellido}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Genero</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:selectOneMenu value="#{usuariosBean.genero}">
+									<f:selectItem itemValue="M" itemLabel="Masculino" />
+									<f:selectItem itemValue="F" itemLabel="Femenino" />
+								</b:selectOneMenu>
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Usuario</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Nombre de usuario" value="#{usuariosBean.username}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Contraseña</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputSecret placeholder="Contraseña" value="#{usuariosBean.pass}" />
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{usuariosBean.crearUsuario()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL EDITAR -->
+			<b:modal id="modalEditarUsuario" title="Editar datos usuario" styleClass="modalEditarUsuario" >
 				<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
@@ -110,25 +171,75 @@
 						<b:row>
 							<b:column large-screen="3"><label>Usuario</label></b:column>
 							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre de usuario" value="#{usuariosBean.username}" />
+								<b:inputText value="#{usuariosBean.usuarioSeleccionado.login}" readonly="true" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Contraseña</label></b:column>
+							<b:column large-screen="3"><label>Estado</label></b:column>
 							<b:column large-screen="9" styleClass="form-group">
-								<b:inputSecret placeholder="Contraseña" value="#{usuariosBean.pass}" />
+								<b:selectOneMenu value="#{usuariosBean.usuarioSeleccionado.activo}">
+									<f:selectItem itemValue="1" itemLabel="Activo" />
+									<f:selectItem itemValue="0" itemLabel="Inactivo" />
+								</b:selectOneMenu>
 							</b:column>
 						</b:row>
 		 			</b:column>
 	 			</b:row>
-			
 			    <f:facet name="footer">
 					<b:row>
 						<b:column largeScreen="6">
 							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
 						</b:column>
 						<b:column largeScreen="6">
-							<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{usuariosBean.crearUsuario()}" dismiss="modal" />
+							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{usuariosBean.editarUsuario()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL ELIMINAR/INACTIVAR -->
+			<b:modal id="modalInhabilitarUsuario" title="Inhabilitar usuario" styleClass="modalInhabilitarUsuario" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>¿Está seguro que desea inhabilitar a <b>#{usuariosBean.usuarioSeleccionado.nombreCompleto}</b>
+								del sistema? Al hacer esto el usuario <b>#{usuariosBean.usuarioSeleccionado.login}</b>
+								no podrá iniciar sesión en el aplicativo, excluyendol@ de
+								cualquier proceso que realice dentro del sistema.</p>
+							<p>Si desea re-activar un usuario puede filtrar los usuarios por estado, seleccionando la opción "Inactivos" y re-activarlo.</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Inhabilitar Usuario" look="warning" styleClass="btn-warning-blanco" icon-awesome="hand-o-down" action="#{usuariosBean.inhabilitarUsuario()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL RE-ACTIVAR -->
+			<b:modal id="modalReActivarUsuario" title="Re-activar usuario" styleClass="modalReActivarUsuario" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>¿Está seguro que desea re-activar a <b>#{usuariosBean.usuarioSeleccionado.nombreCompleto}</b>
+								en el sistema? Al hacer esto el usuario <b>#{usuariosBean.usuarioSeleccionado.login}</b>
+								retomará las tareas que tenía asociadas en el aplicativo.</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Re-Activar Usuario" look="success" styleClass="btn-success-blanco" icon-awesome="hand-o-up" action="#{usuariosBean.reactivarUsuario()}" dismiss="modal" />
 						</b:column>
 					</b:row>
 			    </f:facet>

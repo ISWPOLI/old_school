@@ -1,5 +1,6 @@
 package com.oldschool.ejb;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -42,6 +43,20 @@ public class EjbLogin implements EjbLoginLocal {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public boolean actualizarFechaAcceso(int idUsuario) throws Exception {
+		Query query = em.createNativeQuery("UPDATE usuario SET Fecha_Ultimo_Acceso = ? WHERE Id_usuario = ?");
+		query.setParameter(1, new Date());
+		query.setParameter(2, idUsuario);
+		
+		int result = query.executeUpdate();
+		if(result>=1){
+			return true;
+		}
+		
+		return false;
 	}
 	
 }

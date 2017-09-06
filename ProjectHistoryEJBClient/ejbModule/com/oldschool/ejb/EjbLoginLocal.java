@@ -9,5 +9,6 @@ public interface EjbLoginLocal {
 
 	public int getIdByUser(String user) throws Exception;
 	public Usuario iniciarSesion(String user, String pass) throws Exception;
+	public boolean actualizarFechaAcceso(int idUsuario) throws Exception;
 	
 }

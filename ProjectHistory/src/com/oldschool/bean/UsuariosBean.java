@@ -36,6 +36,9 @@ public class UsuariosBean implements Serializable {
 	private List<Usuario> listaUsuarios;
 	private Usuario usuarioSeleccionado;
 	//Formulario de registro
+	private String nombre;
+	private String apellido;
+	private String genero;
 	private String username;
 	private String pass;
 	//Filtro usuario
@@ -62,6 +65,9 @@ public class UsuariosBean implements Serializable {
 	public void limpiar(){
 		this.listaUsuarios = new ArrayList<>();
 		this.usuarioSeleccionado = new Usuario();
+		this.nombre = null;
+		this.apellido = null;
+		this.genero = null;
 		this.username = null;
 		this.pass = null;
 		this.filtroNombre = null;
@@ -72,13 +78,13 @@ public class UsuariosBean implements Serializable {
 			//Validar campos vacios
 			boolean validar = false;
 			if(this.usuarioSeleccionado!=null){
-				if(Util.isEmpty(this.usuarioSeleccionado.getNombre_Usuario())){
+				if(Util.isEmpty(this.nombre)){
 					validar = true;
 				}
-				if(Util.isEmpty(this.usuarioSeleccionado.getApellido())){
+				if(Util.isEmpty(this.apellido)){
 					validar = true;
 				}
-				if(Util.isEmpty(this.usuarioSeleccionado.getGenero())){
+				if(Util.isEmpty(this.genero)){
 					validar = true;
 				}
 				if(Util.isEmpty(this.username)){
@@ -94,7 +100,10 @@ public class UsuariosBean implements Serializable {
 				if(existeUsuario){
 					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ya existe un recurso registrado con ese nombre usuario.");
 				}else{
-					Usuario usuario = this.usuarioSeleccionado;
+					Usuario usuario = new Usuario();
+					usuario.setNombre_Usuario(nombre);
+					usuario.setApellido(apellido);
+					usuario.setGenero(genero);
 					usuario.setActivo(Usuario.ESTADO_ACTIVO);
 					usuario.setLogin(this.username);
 					String encPass = Util.encriptarPass(this.username, this.pass);
@@ -141,7 +150,71 @@ public class UsuariosBean implements Serializable {
 	}
 	
 	public void editarUsuario(){
-		
+		try {
+			//Validar campos vacios
+			boolean validar = false;
+			if(this.usuarioSeleccionado!=null){
+				if(Util.isEmpty(this.usuarioSeleccionado.getNombre_Usuario())){
+					validar = true;
+				}
+				if(Util.isEmpty(this.usuarioSeleccionado.getApellido())){
+					validar = true;
+				}
+				if(Util.isEmpty(this.usuarioSeleccionado.getGenero())){
+					validar = true;
+				}
+			}
+			//Actualizar
+			if(!validar){
+				boolean result = ejbUsuarios.actualizarDatosUsuario(usuarioSeleccionado);
+				if(result){
+					Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizaron los datos del usuario exitosamente.");
+					limpiar();
+					cargarListaUsuarios(Usuario.ESTADO_ACTIVO);
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando los datos del usuario, por favor intentelo de nuevo más tarde.");
+				}
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
+			}
+		} catch (Exception e) {
+			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+			e.printStackTrace();
+		}
+	}
+	
+	public void inhabilitarUsuario(){
+		try {
+			if(this.usuarioSeleccionado!=null){
+				boolean result = ejbUsuarios.cambiarEstadoDeUsuario(usuarioSeleccionado.getId_usuario(), Usuario.ESTADO_INACTIVO);
+				if(result){
+					Mensaje.mostrarMensaje(Mensaje.INFO, "Se Inhabilitó el usuario correctamente.");
+					limpiar();
+					cargarListaUsuarios(Usuario.ESTADO_ACTIVO);
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error inhabilitando el usuario, por favor intentelo de nuevo más tarde.");
+				}
+			}
+		} catch (Exception e) {
+			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+		}
+	}
+	
+	public void reactivarUsuario(){
+		try {
+			if(this.usuarioSeleccionado!=null){
+				boolean result = ejbUsuarios.cambiarEstadoDeUsuario(usuarioSeleccionado.getId_usuario(), Usuario.ESTADO_ACTIVO);
+				if(result){
+					Mensaje.mostrarMensaje(Mensaje.INFO, "Se re-activó el usuario correctamente.");
+					limpiar();
+					cargarListaUsuarios(Usuario.ESTADO_INACTIVO);
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error re-activando el usuario, por favor intentelo de nuevo más tarde.");
+				}
+			}
+		} catch (Exception e) {
+			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+		}
 	}
 	
 	/*Get & Set*/
@@ -162,6 +235,24 @@ public class UsuariosBean implements Serializable {
 	}
 	public void setUsuarioSeleccionado(Usuario usuarioSeleccionado) {
 		this.usuarioSeleccionado = usuarioSeleccionado;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public String getApellido() {
+		return apellido;
+	}
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+	public String getGenero() {
+		return genero;
+	}
+	public void setGenero(String genero) {
+		this.genero = genero;
 	}
 	public String getUsername() {
 		return username;

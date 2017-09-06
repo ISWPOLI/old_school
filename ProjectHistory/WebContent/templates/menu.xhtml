@@ -35,7 +35,11 @@
 				<b:navLink value="#{loginBean.sesionBean.usuario.nombreCompleto}" iconAwesome="id-card-o" ></b:navLink>
 				<b:navLink header="#{loginBean.sesionBean.usuario.nombreRoles}"></b:navLink>
 				<b:navLink />
-				<b:navLink value="Cerrar sesión" actionListener="#{loginBean.cerrarSesion()}" iconAwesome="sign-out"></b:navLink>
+				<h:form>
+					<li class="cerrar-sesion">
+						<h:commandLink value="Cerrar sesión" action="#{loginBean.cerrarSesion()}"></h:commandLink>
+					</li>
+				</h:form>
 			</b:dropMenu>
 			
 		</b:navbarLinks>

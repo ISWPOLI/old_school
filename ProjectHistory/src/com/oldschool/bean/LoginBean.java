@@ -8,6 +8,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
+import com.oldschool.ejb.EjbGenericoLocal;
 import com.oldschool.ejb.EjbLoginLocal;
 import com.oldschool.model.Usuario;
 import com.oldschool.util.Mensaje;
@@ -21,6 +22,7 @@ public class LoginBean implements Serializable {
 	public static final String BEAN_NAME = "loginBean";
 	private static final long serialVersionUID = 1461272576618969285L;
 	@EJB private EjbLoginLocal ejbLogin;
+	@EJB private EjbGenericoLocal ejbGenerico;
 	
 	/*Variables de sesión*/
 	@ManagedProperty(value = "#{sesionBean}")
@@ -31,6 +33,22 @@ public class LoginBean implements Serializable {
 	private String pass;
 	
 	/*Métodos privados*/
+	private void actualizarFechaDeAcceso(int idUsuario){
+		try {
+//			Usuario temp = new Usuario();
+//			temp.setId_usuario(idUsuario);
+//			temp.setFecha_Ultimo_Acceso(new Date());
+			if(ejbLogin.actualizarFechaAcceso(idUsuario)){
+//			if(ejbGenerico.actualizarObjeto(temp)){
+				System.out.println("Se actualizó la última fecha de acceso correctamente");
+			}else{
+				System.out.println("No se logró actualizar la última fecha de acceso");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/*Métodos públicos*/
 	@PostConstruct
@@ -46,9 +64,14 @@ public class LoginBean implements Serializable {
 			String encPass = Util.encriptarPass(this.user, this.pass);
 			Usuario usuario = ejbLogin.iniciarSesion(user, encPass);
 			if(usuario!=null){
+				//Session Bean
 				sesionBean.setNombreUser(user);
 				sesionBean.setUsuario(usuario);
+				//Actualizar
+				actualizarFechaDeAcceso(usuario.getId_usuario());
+				//Mensaje de confirmacion
 				Mensaje.mostrarMensaje(Mensaje.INFO, "Bienvenido " + user);
+				//Retorno
 				return "home-page";
 			}else{
 				Mensaje.mostrarMensaje(Mensaje.WARN, "Usuario o contraseña incorrecta.");

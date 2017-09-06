@@ -15,12 +15,12 @@
 	
 	<ui:define name="full-content">
 		<div class="bienvenido">
-			<b:row><h1>Bienvenido #{loginBean.sesionBean.usuario.nombreCompleto} al App de asignaciones</h1></b:row>
+			<b:row><h1><h:outputText value="#{loginBean.sesionBean.usuario.genero eq 'M'? 'Bienvenido': 'Bienvenida'}" /> #{loginBean.sesionBean.usuario.nombreCompleto}</h1></b:row>
 			<b:row><h3>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</h3></b:row>
 			<b:row styleClass="cards">
 				<b:column col-lg="3">
 					<div class="panel panel-default panel-azul">
-						<div class="panel-heading">Consultar horario</div>
+						<div class="panel-heading">Proyectos</div>
 						<div class="panel-body">
 							<p class="text-justify">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 							<p class="text-justify"> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
@@ -30,7 +30,7 @@
 				</b:column>
 				<b:column col-lg="3">
 					<div class="panel panel-default panel-verde">
-						<div class="panel-heading">Proyectos</div>
+						<div class="panel-heading">Clientes</div>
 						<div class="panel-body">
 							<p class="text-justify">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 							<p class="text-justify"> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
@@ -50,7 +50,7 @@
 				</b:column>
 				<b:column col-lg="3">
 					<div class="panel panel-default panel-amarillo">
-						<div class="panel-heading">Clientes</div>
+						<div class="panel-heading">Reportes</div>
 						<div class="panel-body">
 							<p class="text-justify">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 							<p class="text-justify"> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
@@ -63,10 +63,7 @@
 	</ui:define>
 	<ui:define name="content">
 		<b:container>
-			<h1>Bienvenido al aplicativo de asignaciones</h1>
-			
 			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-			
 		</b:container>
 	</ui:define>
  

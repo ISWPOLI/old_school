@@ -73,4 +73,35 @@ public class EjbUsuarios implements EjbUsuariosLocal {
 		return null;
 	}
 	
+	@Override
+	public boolean actualizarDatosUsuario(Usuario usuario) throws Exception {
+		Query query = em.createNativeQuery("UPDATE usuario SET Nombre_Usuario = ?, Apellido = ?, Genero = ?, Activo = ? WHERE Id_usuario = ?");
+		query.setParameter(1, usuario.getNombre_Usuario());
+		query.setParameter(2, usuario.getApellido());
+		query.setParameter(3, usuario.getGenero());
+		query.setParameter(4, usuario.getActivo());
+		query.setParameter(5, usuario.getId_usuario());
+		
+		int result = query.executeUpdate();
+		if(result>=1){
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean cambiarEstadoDeUsuario(int idUsuario, byte estado) throws Exception {
+		Query query = em.createNativeQuery("UPDATE usuario SET Activo = ? WHERE Id_usuario = ?");
+		query.setParameter(1, estado);
+		query.setParameter(2, idUsuario);
+		
+		int result = query.executeUpdate();
+		if(result>=1){
+			return true;
+		}
+		
+		return false;
+	}
+	
 }

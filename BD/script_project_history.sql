@@ -277,7 +277,25 @@ INSERT INTO `project_history`.`rol` VALUES (2, 'Consultor', 'Este perfil tiene p
 INSERT INTO `project_history`.`rol` VALUES (3, 'Aprobador', 'Este perfil tiene permisos para aprobar', 1);
 
 INSERT INTO `project_history`.`usuario` VALUES (1, 'Joel', 'Pulido G', 'M', 'joel', 'c0b84d1ccb798a5d7b82a2af42203428', '2017-09-03 00:00:00', 1);
+INSERT INTO `project_history`.`usuario` VALUES (2, 'Maria Paula', 'Camacho', 'F', 'mpcamacho', 'c0b84d1ccb798a5d7b82a2af42203428', null, 1);
 
 INSERT INTO `project_history`.`rol_usuario` VALUES (1, 1);
 INSERT INTO `project_history`.`rol_usuario` VALUES (1, 2);
 INSERT INTO `project_history`.`rol_usuario` VALUES (1, 3);
+
+INSERT INTO `project_history`.`rol_usuario` VALUES (2, 2);
+
+INSERT INTO `project_history`.`area` VALUES("Portal");
+INSERT INTO `project_history`.`area` VALUES("Mega");
+
+INSERT INTO `project_history`.`cliente` VALUES("Davivienda", 9582563, "Calle 28 # 13 - 33", 3300000, "hpelaez@davivienda.com.co", 1);
+
+INSERT INTO `project_history`.`tipo_documento` VALUES("Documento funcional", null);
+INSERT INTO `project_history`.`tipo_documento` VALUES("Cronograma", null);
+
+INSERT INTO `project_history`.`proyecto` VALUES("Planes de negocio", '2017-09-05 00:00:00', 1, 1, 1);
+
+INSERT INTO `project_history`.`documento_asociado` VALUES("17-09-05 Doc funcional v1.0", '2017-09-05 00:00:00', 1, 1, 1);
+INSERT INTO `project_history`.`documento_asociado` VALUES("17-09-05 Doc funcional v1.0", '2017-09-05 00:00:00', 1, 2, 1);
+
+

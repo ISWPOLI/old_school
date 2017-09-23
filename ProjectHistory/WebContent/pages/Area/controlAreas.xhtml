@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" 
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="../../templates/defaultLayout.xhtml">
+	<ui:define name="title">
+		<h:outputText value="Control de Áreas" />
+	</ui:define>
+	
+	<!-- Título pantalla -->
+	<ui:define name="titulo">
+		<b:row>
+			<h2>Control de &Aacute;reas</h2>
+		</b:row>
+	</ui:define>
+	<!-- Miga de pan -->
+	<ui:define name="breadcrumb">
+		<b:row>
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><h:link outcome="home">Inicio</h:link></li>
+			  <li class="breadcrumb-item active">Control de &aacute;reas</li>
+			</ol>
+		</b:row>
+	</ui:define>
+	
+	<!-- Contenido de página -->
+	<ui:define name="content">
+		<h:form id="form" styleClass="form-horizontal" >
+			
+			<b:row>
+				<b:column>
+					<b:panel collapsible="false" styleClass="panel-negro" >
+						<f:facet name="heading">
+							<i class="fa fa-filter" style="padding-right: 10px" />
+							<h:outputText value="Filtro de areas" />
+						</f:facet>
+						<b:row>
+							<b:column large-screen="3">
+								<h:outputLabel value="Digite el nombre del área que desea filtrar" />
+							</b:column>
+							<b:column large-screen="3">
+								<b:inputText placeholder="Ej: IBM Portal" value="#{areasBean.filtroNombre}" />
+							</b:column>
+							<b:column large-screen="2">
+								<b:selectOneMenu>
+									<f:selectItem itemValue="A" itemLabel="Activo" />
+									<f:selectItem itemValue="I" itemLabel="Inactivo" />
+								</b:selectOneMenu>
+							</b:column>
+							<b:column large-screen="2">
+								<b:commandButton value="Filtrar Areas" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{areasBean.filtrarArea()}" update="form:tabla" />
+							</b:column>
+							<b:column largeScreen="2">
+								<b:button ajax="true" value="Nueva Area" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevaArea').modal()" />
+							</b:column>
+						</b:row>
+					</b:panel>
+				</b:column>
+
+
+			</b:row>
+			
+			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
+				<b:dataTable id="tabla" value="#{areasBean.listaAreas}" styleClass="no-length-menu" var="area" lang="es" border="false" searching="false" pageLength="10">
+					<b:dataTableColumn label="Nombre" value="#{area.nombre_Area}" order="asc" />
+					<b:dataTableColumn label="Estado" value="Activo" />
+					<b:dataTableColumn label="Opciones">
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarArea').modal()" update="form:modalEditarArea" >
+							<b:iconAwesome name="pencil" tooltip="Editar area" />
+							<f:setPropertyActionListener value="#{area}" target="#{areasBean.areaSeleccionada}" />
+						</p:commandLink>
+					</b:dataTableColumn>
+				</b:dataTable>
+			</b:row>
+			
+			<!-- MODAL AGREGAR -->
+			<b:modal id="modalNuevaArea" title="Nueva Area" styleClass="modalNuevaArea" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="3"><label>Nombre de area</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Nombre de area" value="#{areasBean.nombre}" />
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{areasBean.crearArea()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL EDITAR -->
+			<b:modal id="modalEditarArea" title="Editar datos area" styleClass="modalEditarArea" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="3"><label>Nombre</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Nombre" value="#{areasBean.areaSeleccionada.nombre_Area}" />
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{areasBean.editarArea()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<script>
+				$(document).ready( ocultarPrimeraFilaTabla() );
+			</script>
+		
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

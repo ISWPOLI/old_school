@@ -22,6 +22,11 @@
 			<to-view-id>/pages/Usuario/controlUsuarios.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>control-areas</from-outcome>
+			<to-view-id>/pages/Area/controlAreas.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 	
 	<navigation-rule>

@@ -1,8 +1,14 @@
 package com.oldschool.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 public class Util {
 
@@ -38,4 +44,34 @@ public class Util {
 		}
 	}
 
+	public static byte[] convertirFileABlob(String ruta) throws IOException {
+		byte[] fileContent = null;
+		try {
+			fileContent = FileUtils.readFileToByteArray(new File(ruta));
+		} catch (IOException e) {
+			throw new IOException("No se pudo convertir File a ByteArray. " + e.getMessage());
+		}
+		return fileContent;
+	}
+	
+	public static byte[] convertirFileABlob(File archivo) throws IOException {
+		byte[] fileContent = null;
+		try {
+			fileContent = FileUtils.readFileToByteArray(archivo);
+		} catch (IOException e) {
+			throw new IOException("No se pudo convertir File a ByteArray. " + e.getMessage());
+		}
+		return fileContent;
+	}
+	
+	public static byte[] convertirFileABlob(InputStream io) throws IOException {
+		byte[] fileContent = null;
+		try {
+			fileContent = IOUtils.toByteArray(io);
+		} catch (IOException e) {
+			throw new IOException("No se pudo convertir InputStream a ByteArray. " + e.getMessage());
+		}
+		return fileContent;
+	}
+	
 }

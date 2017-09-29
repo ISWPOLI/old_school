@@ -27,6 +27,11 @@
 			<to-view-id>/pages/Area/controlAreas.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>control-plantillas</from-outcome>
+			<to-view-id>/pages/Plantilla/controlPlantillas.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 	
 	<navigation-rule>

@@ -1,8 +1,19 @@
 package com.oldschool.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 
 /**
@@ -11,7 +22,10 @@ import java.util.List;
  */
 @Entity
 @Table(name="tipo_documento")
-@NamedQuery(name="TipoDocumento.findAll", query="SELECT t FROM TipoDocumento t")
+@NamedQueries({
+	@NamedQuery(name="TipoDocumento.findAll", query="SELECT t FROM TipoDocumento t"),
+	@NamedQuery(name="TipoDocumento.findByNombre", query="SELECT t FROM TipoDocumento t WHERE LOWER(t.nombre_Tipo_Documento) LIKE :nombre_Tipo_Documento")
+})
 public class TipoDocumento implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -21,6 +35,15 @@ public class TipoDocumento implements Serializable {
 
 	private String nombre_Tipo_Documento;
 
+	@Column(name="tipo_archivo")
+	private String tipo_archivo;
+	
+	@Column(name="fecha_modificacion")
+	private Date fecha_modificacion;
+	
+	@Column(name="tamanio_documento")
+	private long tamanio_documento;
+	
 	@Lob
 	private byte[] plantilla;
 
@@ -54,7 +77,28 @@ public class TipoDocumento implements Serializable {
 	public void setPlantilla(byte[] plantilla) {
 		this.plantilla = plantilla;
 	}
+	
+	public String getTipo_archivo() {
+		return tipo_archivo;
+	}
+	public void setTipo_archivo(String tipo_archivo) {
+		this.tipo_archivo = tipo_archivo;
+	}
 
+	public Date getFecha_modificacion() {
+		return fecha_modificacion;
+	}
+	public void setFecha_modificacion(Date fecha_modificacion) {
+		this.fecha_modificacion = fecha_modificacion;
+	}
+	
+	public long getTamanio_documento() {
+		return tamanio_documento;
+	}
+	public void setTamanio_documento(long tamanio_documento) {
+		this.tamanio_documento = tamanio_documento;
+	}
+	
 	public List<DocumentoAsociado> getDocumentoAsociados() {
 		return this.documentoAsociados;
 	}

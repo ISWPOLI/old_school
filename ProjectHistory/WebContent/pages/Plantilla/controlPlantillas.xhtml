@@ -48,10 +48,10 @@
 								<b:inputText placeholder="Ej: Cronograma" value="#{plantillasBean.filtroNombre}" />
 							</b:column>
 							<b:column large-screen="2">
-								<b:commandButton value="Filtrar Plantillas" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{plantillasBean.filtrarArea()}" update="form:tabla" />
+								<b:commandButton value="Filtrar Plantillas" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{plantillasBean.filtrarPlantillas()}" update="form:tabla" />
 							</b:column>
 							<b:column largeScreen="2">
-								<b:button ajax="true" value="Nueva Plantilla" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevaArea').modal()" />
+								<b:button ajax="true" value="Nueva Plantilla" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevaPlantilla').modal()" />
 							</b:column>
 						</b:row>
 					</b:panel>
@@ -63,34 +63,39 @@
 			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
 				<b:dataTable id="tabla" value="#{plantillasBean.listaPlantillas}" styleClass="no-length-menu" var="plantilla" lang="es" border="false" searching="false" pageLength="10">
 					<b:dataTableColumn label="Nombre" value="#{plantilla.nombre_Tipo_Documento}" order="asc" />
-					<b:dataTableColumn label="Estado" value="Activo" />
+					<b:dataTableColumn label="Ult. Modificación" value="#{plantilla.fecha_modificacion}" />
+					<b:dataTableColumn label="Tamaño" value="#{plantilla.tamanio_documento} KB" />
 					<b:dataTableColumn label="Opciones">
-						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarArea').modal()" update="form:modalEditarArea" >
-							<b:iconAwesome name="pencil" tooltip="Editar area" />
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarPlantilla').modal()" update="form:modalEditarPlantilla" >
+							<b:iconAwesome name="pencil" tooltip="Editar plantilla" />
 							<f:setPropertyActionListener value="#{plantilla}" target="#{plantillasBean.plantillaSeleccionada}" />
+						</p:commandLink>
+						<p:commandLink ajax="false" styleClass="opciones-tabla">
+							<b:iconAwesome name="download" tooltip="Descargar plantilla" />
+							<f:setPropertyActionListener value="#{plantilla}" target="#{plantillasBean.plantillaSeleccionada}" />
+							<p:fileDownload value="#{plantillasBean.descargarPlantilla()}" />
 						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>
 			</b:row>
 			
 			<!-- MODAL AGREGAR -->
-			<b:modal id="modalNuevaArea" title="Nueva Area" styleClass="modalNuevaArea" >
+			<b:modal id="modalNuevaPlantilla" title="Nueva plantilla" styleClass="modalNuevaPlantilla" >
 				<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
-							<b:column large-screen="3"><label>Nombre de la plantilla</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre de la plantilla" value="#{plantillasBean.nombre}" />
+							<b:column large-screen="12" styleClass="form-group">
+								<b:inputText placeholder="Nombre de la plantilla" value="#{plantillasBean.nombre}" label="Nombre de la plantilla" />
 							</b:column>
 						</b:row>
 						<b:row>
 							<b:column large-screen="12"><label>Seleccionar plantilla</label></b:column>
 							<b:column large-screen="12" styleClass="form-group">
-								<p:fileUpload fileUploadListener="#{plantillasBean.handleFileUpload}" mode="advanced" auto="true" 
-								dragDropSupport="true" multiple="false" sizeLimit="100000000" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+								<p:fileUpload class="carga-archivos" fileUploadListener="#{plantillasBean.handleFileUpload}" mode="advanced" auto="true" update="cargaNombreArchivo" 
+								dragDropSupport="true" multiple="true" sizeLimit="15000000" />
 							</b:column>
 							<b:column large-screen="12" styleClass="form-group">
-								<h:outputText value="Archivo cargado: #{plantillasBean.nombeArchivoCargado}" />
+								<h:outputText id="cargaNombreArchivo" value="Archivo cargado: #{plantillasBean.nombeArchivoCargado}" />
 							</b:column>
 						</b:row>
 		 			</b:column>
@@ -108,13 +113,29 @@
 			</b:modal>
 			
 			<!-- MODAL EDITAR -->
-			<b:modal id="modalEditarArea" title="Editar datos area" styleClass="modalEditarArea" >
-				<b:row>
+			<b:modal id="modalEditarPlantilla" title="Editar datos area" styleClass="modalEditarPlantilla" >
+	 			<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
-							<b:column large-screen="3"><label>Nombre</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre" value="#{plantillasBean.plantillaSeleccionada.nombre_Tipo_Documento}" />
+							<b:column large-screen="12" styleClass="form-group">
+								<b:inputText placeholder="Nombre de la plantilla" label="Nombre de la plantilla" 
+								value="#{plantillasBean.plantillaSeleccionada.nombre_Tipo_Documento}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="12" styleClass="form-group">
+								<b:inputText label="Ultima modificación" disabled="true"
+								value="#{plantillasBean.plantillaSeleccionada.fecha_modificacion}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="12"><label>Seleccionar plantilla</label></b:column>
+							<b:column large-screen="12" styleClass="form-group">
+								<p:fileUpload class="carga-archivos" fileUploadListener="#{plantillasBean.handleFileUpload}" mode="advanced" auto="true" update="editarNombreArchivo" 
+								dragDropSupport="true" multiple="true" sizeLimit="15000000" />
+							</b:column>
+							<b:column large-screen="12" styleClass="form-group">
+								<h:outputText id="editarNombreArchivo" value="Archivo cargado: #{plantillasBean.nombeArchivoCargado}" />
 							</b:column>
 						</b:row>
 		 			</b:column>
@@ -125,7 +146,7 @@
 							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
 						</b:column>
 						<b:column largeScreen="6">
-							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{plantillasBean.editarArea()}" dismiss="modal" />
+							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{plantillasBean.editarPlantilla()}" dismiss="modal" />
 						</b:column>
 					</b:row>
 			    </f:facet>

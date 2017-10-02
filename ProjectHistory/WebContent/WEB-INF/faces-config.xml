@@ -32,6 +32,11 @@
 			<to-view-id>/pages/Plantilla/controlPlantillas.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>control-clientes</from-outcome>
+			<to-view-id>/pages/Cliente/controlClientes.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 	
 	<navigation-rule>

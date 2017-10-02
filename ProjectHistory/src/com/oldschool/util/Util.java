@@ -43,6 +43,14 @@ public class Util {
 			return true;
 		}
 	}
+	
+	public static boolean isEmpty(long numero){
+		if(numero>0){
+			return false;
+		}else{
+			return true;
+		}
+	}
 
 	public static byte[] convertirFileABlob(String ruta) throws IOException {
 		byte[] fileContent = null;

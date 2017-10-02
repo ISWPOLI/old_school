@@ -10,10 +10,20 @@ import java.util.List;
  * 
  */
 @Entity
-@NamedQuery(name="Cliente.findAll", query="SELECT c FROM Cliente c")
+@NamedQueries({
+	@NamedQuery(name="Cliente.findAll", query="SELECT c FROM Cliente c"),
+	@NamedQuery(name="Cliente.findByEstado", query="SELECT c FROM Cliente c WHERE c.activo = :estado"),
+	@NamedQuery(name="Cliente.findByNombreOrNit", query="SELECT c FROM Cliente c WHERE c.razon_Social = :nombre OR c.nit = :nit"),
+	@NamedQuery(name="Cliente.findByNombreYEstado", query="SELECT c FROM Cliente c WHERE c.activo = :estado AND LOWER(c.razon_Social) LIKE :nombre"),
+	@NamedQuery(name="Cliente.inactivarCliente", query="UPDATE Cliente c SET c.activo = 0 WHERE c.id_Cliente = :idCliente"),
+	@NamedQuery(name="Cliente.activarCliente", query="UPDATE Cliente c SET c.activo = 1 WHERE c.id_Cliente = :idCliente")
+})
 public class Cliente implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static final byte ESTADO_ACTIVO = 1; 
+	public static final byte ESTADO_INACTIVO = 0;
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id_Cliente;
@@ -24,11 +34,11 @@ public class Cliente implements Serializable {
 
 	private String email;
 
-	private int nit;
+	private long nit;
 
 	private String razon_Social;
 
-	private int telefono;
+	private long telefono;
 
 	//bi-directional many-to-one association to Proyecto
 	@OneToMany(mappedBy="cliente")
@@ -69,11 +79,11 @@ public class Cliente implements Serializable {
 		this.email = email;
 	}
 
-	public int getNit() {
+	public long getNit() {
 		return this.nit;
 	}
 
-	public void setNit(int nit) {
+	public void setNit(long nit) {
 		this.nit = nit;
 	}
 
@@ -85,11 +95,11 @@ public class Cliente implements Serializable {
 		this.razon_Social = razon_Social;
 	}
 
-	public int getTelefono() {
+	public long getTelefono() {
 		return this.telefono;
 	}
 
-	public void setTelefono(int telefono) {
+	public void setTelefono(long telefono) {
 		this.telefono = telefono;
 	}
 

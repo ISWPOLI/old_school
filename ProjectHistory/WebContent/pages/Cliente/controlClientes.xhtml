@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" 
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="../../templates/defaultLayout.xhtml">
+	<ui:define name="title">
+		<h:outputText value="Control de clientes" />
+	</ui:define>
+	
+	<!-- Título pantalla -->
+	<ui:define name="titulo">
+		<b:row>
+			<h2>Control de clientes</h2>
+		</b:row>
+	</ui:define>
+	<!-- Miga de pan -->
+	<ui:define name="breadcrumb">
+		<b:row>
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><h:link outcome="home">Inicio</h:link></li>
+			  <li class="breadcrumb-item active">Control de clientes</li>
+			</ol>
+		</b:row>
+	</ui:define>
+	
+	<!-- Contenido de página -->
+	<ui:define name="content">
+		<h:form id="form" styleClass="form-horizontal" >
+			
+			<b:row>
+				<b:column>
+					<b:panel collapsible="false" styleClass="panel-negro" >
+						<f:facet name="heading">
+							<i class="fa fa-filter" style="padding-right: 10px" />
+							<h:outputText value="Filtro de clientes" />
+						</f:facet>
+						<b:row>
+							<b:column large-screen="3">
+								<h:outputLabel value="Digite el nombre del cliente que desea filtrar" />
+							</b:column>
+							<b:column large-screen="3">
+								<b:inputText placeholder="Ej: Daniel Rodriguez" value="#{clientesBean.filtroNombre}" />
+							</b:column>
+							<b:column large-screen="2">
+								<b:selectOneMenu value="#{clientesBean.filtroEstado}">
+									<f:selectItem itemValue="A" itemLabel="Activo" />
+									<f:selectItem itemValue="I" itemLabel="Inactivo" />
+								</b:selectOneMenu>
+							</b:column>
+							<b:column large-screen="2">
+								<b:commandButton value="Filtrar clientes" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{clientesBean.filtrarClientes()}" update="form:tabla" />
+							</b:column>
+							<b:column largeScreen="2">
+								<b:button ajax="true" value="Nuevo cliente" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevoCliente').modal()" />
+							</b:column>
+						</b:row>
+					</b:panel>
+				</b:column>
+
+
+			</b:row>
+			
+			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
+				<b:dataTable id="tabla" value="#{clientesBean.listaClientes}" styleClass="no-length-menu" var="cliente" lang="es" border="false" searching="false" pageLength="10">
+					<b:dataTableColumn label="Razón social" value="#{cliente.razon_Social}" order="asc" />
+					<b:dataTableColumn label="NIT" value="#{cliente.nit}" />
+					<b:dataTableColumn label="Dirección" value="#{cliente.direccion}" />
+					<b:dataTableColumn label="Telefono" value="#{cliente.telefono}" />
+					<b:dataTableColumn label="Email" value="#{cliente.email}" />
+					<b:dataTableColumn label="Estado" value="#{cliente.activo==1? 'Activo' : 'Inactivo'}" />
+					<b:dataTableColumn label="Opciones">
+						<!-- CLIENTES ACTIVOS -->
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarCliente').modal()" update="form:modalEditarCliente" rendered="#{cliente.activo==1}" >
+							<b:iconAwesome name="pencil" tooltip="Editar cliente" />
+							<f:setPropertyActionListener value="#{cliente}" target="#{clientesBean.clienteSeleccionado}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalInhabilitarCliente').modal()" update="form:modalInhabilitarCliente" rendered="#{cliente.activo==1}" >
+							<b:iconAwesome name="hand-o-down" tooltip="Inhabilitar cliente" />
+							<f:setPropertyActionListener value="#{cliente}" target="#{clientesBean.clienteSeleccionado}" />
+						</p:commandLink>
+						<!-- CLIENTES INACTIVOS -->
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalReActivarCliente').modal()" update="form:modalReActivarCliente" rendered="#{cliente.activo==0}" >
+							<b:iconAwesome name="hand-o-up" tooltip="re-activar cliente" />
+							<f:setPropertyActionListener value="#{cliente}" target="#{clientesBean.clienteSeleccionado}" />
+						</p:commandLink>
+					</b:dataTableColumn>
+				</b:dataTable>
+			</b:row>
+			
+			<!-- MODAL AGREGAR -->
+			<b:modal id="modalNuevoCliente" title="Nuevo Cliente" styleClass="modalNuevoCliente" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="3"><label>Raz&oacute;n social</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Razon social" value="#{clientesBean.nombre}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>NIT</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="NIT" value="#{clientesBean.nit}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Direcci&oacute;n</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Dirección" value="#{clientesBean.direccion}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Telefono</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Telefono" value="#{clientesBean.telefono}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Email</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="abc@mail.com" value="#{clientesBean.email}" />
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{clientesBean.crearCliente()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL EDITAR -->
+			<b:modal id="modalEditarCliente" title="Editar datos Cliente" styleClass="modalEditarCliente" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="3"><label>Raz&oacute;n social</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Razon social" value="#{clientesBean.clienteSeleccionado.razon_Social}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>NIT</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="NIT" value="#{clientesBean.clienteSeleccionado.nit}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Direcci&oacute;n</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Dirección" value="#{clientesBean.clienteSeleccionado.direccion}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Telefono</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="Telefono" value="#{clientesBean.clienteSeleccionado.telefono}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Email</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:inputText placeholder="abc@mail.com" value="#{clientesBean.clienteSeleccionado.email}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="3"><label>Estado</label></b:column>
+							<b:column large-screen="9" styleClass="form-group">
+								<b:selectOneMenu value="#{clientesBean.clienteSeleccionado.activo}">
+									<f:selectItem itemValue="1" itemLabel="Activo" />
+									<f:selectItem itemValue="0" itemLabel="Inactivo" />
+								</b:selectOneMenu>
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{clientesBean.editarCliente()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL ELIMINAR/INACTIVAR -->
+			<b:modal id="modalInhabilitarCliente" title="Inhabilitar Cliente" styleClass="modalInhabilitarCliente" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>¿Está seguro que desea inhabilitar a <b>#{clientesBean.clienteSeleccionado.razon_Social}</b>
+								del sistema? Al hacer esto el cliente no se verá en ninguna lista del sistema
+								ni se podrán generar reportes con el mismo.</p>
+							<p>Si desea re-activar un cliente puede filtrar los clientes por estado, seleccionando la opción "Inactivos" y re-activarlo.</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Inhabilitar cliente" look="warning" styleClass="btn-warning-blanco" icon-awesome="hand-o-down" action="#{clientesBean.inhabilitarCliente()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL RE-ACTIVAR -->
+			<b:modal id="modalReActivarCliente" title="Re-activar Cliente" styleClass="modalReActivarCliente" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>¿Está seguro que desea re-activar a <b>#{clientesBean.clienteSeleccionado.razon_Social}</b>
+								en el sistema? Al hacer esto el cliente se verá nuevamente en las listas y reportes del aplicativo.</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Re-Activar Cliente" look="success" styleClass="btn-success-blanco" icon-awesome="hand-o-up" action="#{clientesBean.reactivarCliente()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<script>
+				$(document).ready( ocultarPrimeraFilaTabla() );
+			</script>
+		
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

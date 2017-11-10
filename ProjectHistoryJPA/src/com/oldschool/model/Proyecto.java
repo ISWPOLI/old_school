@@ -11,7 +11,12 @@ import java.util.List;
  * 
  */
 @Entity
-@NamedQuery(name="Proyecto.findAll", query="SELECT p FROM Proyecto p")
+@Table(name="proyecto")
+@NamedQueries({
+	@NamedQuery(name="Proyecto.findAll", query="SELECT p FROM Proyecto p"),
+	@NamedQuery(name="Proyecto.findByNombre", query="SELECT p FROM Proyecto p WHERE LOWER(p.nombre_Proyecto) LIKE :nombre_Proyecto")
+	
+})
 public class Proyecto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -23,6 +28,10 @@ public class Proyecto implements Serializable {
 	private Date fecha_Creacion_Proyecto;
 
 	private String nombre_Proyecto;
+	
+	private String descripcion;
+	
+	private String estado;
 
 	//bi-directional many-to-one association to DocumentoAsociado
 	@OneToMany(mappedBy="proyecto")
@@ -114,6 +123,20 @@ public class Proyecto implements Serializable {
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+	
+	public String getDescripcion() {
+		return descripcion;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+	
+	public String getEstado() {
+		return estado;
+	}
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}
 
 }

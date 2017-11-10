@@ -13,6 +13,7 @@ import javax.faces.bean.ViewScoped;
 import com.oldschool.ejb.EjbGenericoLocal;
 import com.oldschool.ejb.EjbLoginLocal;
 import com.oldschool.ejb.EjbUsuariosLocal;
+import com.oldschool.model.Rol;
 import com.oldschool.model.Usuario;
 import com.oldschool.util.Mensaje;
 import com.oldschool.util.Util;
@@ -33,6 +34,7 @@ public class UsuariosBean implements Serializable {
 	private SesionBean sesionBean;
 	
 	/*Variables*/
+	private List<Rol> listaRoles;
 	private List<Usuario> listaUsuarios;
 	private Usuario usuarioSeleccionado;
 	//Formulario de registro
@@ -41,6 +43,7 @@ public class UsuariosBean implements Serializable {
 	private String genero;
 	private String username;
 	private String pass;
+	private String rolesSeleccionados;
 	//Filtro usuario
 	private String filtroNombre;
 	private String filtroEstado;
@@ -55,11 +58,21 @@ public class UsuariosBean implements Serializable {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void cargarListaRoles(){
+		try {
+			this.listaRoles = (List<Rol>)(List<?>)ejbGenerico.listarTodo(new Rol()); 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/*Métodos públicos*/
 	@PostConstruct
 	public void init(){
 		limpiar();
 		cargarListaUsuarios(Usuario.ESTADO_ACTIVO);
+		cargarListaRoles();
 	}
 	
 	public void limpiar(){
@@ -71,6 +84,7 @@ public class UsuariosBean implements Serializable {
 		this.username = null;
 		this.pass = null;
 		this.filtroNombre = null;
+		this.rolesSeleccionados = null;
 	}
 	
 	public void crearUsuario(){
@@ -93,6 +107,9 @@ public class UsuariosBean implements Serializable {
 				if(Util.isEmpty(this.pass)){
 					validar = true;
 				}
+				if(Util.isEmpty(this.rolesSeleccionados)){
+					validar = true;
+				}
 			}
 			//Validar si el nombre de usuario ya existe
 			if(!validar){
@@ -100,6 +117,16 @@ public class UsuariosBean implements Serializable {
 				if(existeUsuario){
 					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ya existe un recurso registrado con ese nombre usuario.");
 				}else{
+					//Roles
+					List<Rol> roles = new ArrayList<>();
+					String[] rolesStr = rolesSeleccionados.split(",");
+					for (String idRol : rolesStr) {
+						Rol rol = new Rol();
+						rol.setId_Rol( idRol.equals("0") ? 1 : Integer.valueOf(idRol) );
+						roles.add(rol);
+					}
+					
+					//Usuario
 					Usuario usuario = new Usuario();
 					usuario.setNombre_Usuario(nombre);
 					usuario.setApellido(apellido);
@@ -108,8 +135,10 @@ public class UsuariosBean implements Serializable {
 					usuario.setLogin(this.username);
 					String encPass = Util.encriptarPass(this.username, this.pass);
 					usuario.setContraseña(encPass);
+					usuario.setRols(roles);
 					//Crear usuario
-					boolean resultado = ejbGenerico.agregarObjeto(usuario);
+					boolean resultado = ejbUsuarios.registrarUsuario(usuario);
+//					boolean resultado = ejbGenerico.agregarObjeto(usuario);
 					if(resultado){
 						Mensaje.mostrarMensaje(Mensaje.INFO, "Se registró el usuario correctamente");
 						limpiar();
@@ -166,6 +195,16 @@ public class UsuariosBean implements Serializable {
 			}
 			//Actualizar
 			if(!validar){
+				//Roles
+				List<Rol> roles = new ArrayList<>();
+				String[] rolesStr = rolesSeleccionados.split(",");
+				for (String idRol : rolesStr) {
+					Rol rol = new Rol();
+					rol.setId_Rol( idRol.equals("0") ? 1 : Integer.valueOf(idRol) );
+					roles.add(rol);
+				}
+				usuarioSeleccionado.setRols(roles);
+				
 				boolean result = ejbUsuarios.actualizarDatosUsuario(usuarioSeleccionado);
 				if(result){
 					Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizaron los datos del usuario exitosamente.");
@@ -217,12 +256,29 @@ public class UsuariosBean implements Serializable {
 		}
 	}
 	
+	public void cargarRoles(){
+		StringBuilder idRoles = new StringBuilder();
+		for (Rol rol : this.usuarioSeleccionado.getRols()) {
+			if(idRoles.length() != 0){
+				idRoles.append(", ");
+			}
+			idRoles.append( rol.getId_Rol() );
+		}
+		this.rolesSeleccionados = idRoles.toString();
+	}
+	
 	/*Get & Set*/
 	public SesionBean getSesionBean() {
 		return sesionBean;
 	}
 	public void setSesionBean(SesionBean sesionBean) {
 		this.sesionBean = sesionBean;
+	}
+	public List<Rol> getListaRoles() {
+		return listaRoles;
+	}
+	public void setListaRoles(List<Rol> listaRoles) {
+		this.listaRoles = listaRoles;
 	}
 	public List<Usuario> getListaUsuarios() {
 		return listaUsuarios;
@@ -277,5 +333,11 @@ public class UsuariosBean implements Serializable {
 	}
 	public void setFiltroEstado(String filtroEstado) {
 		this.filtroEstado = filtroEstado;
+	}
+	public String getRolesSeleccionados() {
+		return rolesSeleccionados;
+	}
+	public void setRolesSeleccionados(String rolesSeleccionados) {
+		this.rolesSeleccionados = rolesSeleccionados;
 	}
 }

@@ -9,5 +9,6 @@
 		<class>com.oldschool.model.Rol</class>
 		<class>com.oldschool.model.TipoDocumento</class>
 		<class>com.oldschool.model.Usuario</class>
+		<class>com.oldschool.model.ReportePlantilla</class>
 	</persistence-unit>
 </persistence>

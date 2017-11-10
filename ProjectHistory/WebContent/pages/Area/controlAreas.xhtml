@@ -45,7 +45,7 @@
 								<h:outputLabel value="Digite el nombre del área que desea filtrar" />
 							</b:column>
 							<b:column large-screen="3">
-								<b:inputText placeholder="Ej: IBM Portal" value="#{areasBean.filtroNombre}" />
+								<b:inputText placeholder="Ej: IBM Portal" value="#{areasBean.filtroNombre}" maxlength="30" />
 							</b:column>
 							<b:column large-screen="2">
 								<b:selectOneMenu>
@@ -84,9 +84,9 @@
 				<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
-							<b:column large-screen="3"><label>Nombre de area</label></b:column>
+							<b:column large-screen="3"><label>Nombre de area (*)</label></b:column>
 							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre de area" value="#{areasBean.nombre}" />
+								<b:inputText placeholder="Nombre de area" value="#{areasBean.nombre}" maxlength="30" />
 							</b:column>
 						</b:row>
 		 			</b:column>
@@ -108,9 +108,9 @@
 				<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
-							<b:column large-screen="3"><label>Nombre</label></b:column>
+							<b:column large-screen="3"><label>Nombre de area (*)</label></b:column>
 							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre" value="#{areasBean.areaSeleccionada.nombre_Area}" />
+								<b:inputText placeholder="Nombre" value="#{areasBean.areaSeleccionada.nombre_Area}" maxlength="30" />
 							</b:column>
 						</b:row>
 		 			</b:column>

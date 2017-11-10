@@ -45,7 +45,7 @@
 								<h:outputLabel value="Digite el nombre de la plantilla que desea filtrar" />
 							</b:column>
 							<b:column large-screen="3">
-								<b:inputText placeholder="Ej: Cronograma" value="#{plantillasBean.filtroNombre}" />
+								<b:inputText placeholder="Ej: Cronograma" value="#{plantillasBean.filtroNombre}" maxlength="30" />
 							</b:column>
 							<b:column large-screen="2">
 								<b:commandButton value="Filtrar Plantillas" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{plantillasBean.filtrarPlantillas()}" update="form:tabla" />
@@ -85,14 +85,14 @@
 					<b:column large-screen="10" offset="1">
 						<b:row>
 							<b:column large-screen="12" styleClass="form-group">
-								<b:inputText placeholder="Nombre de la plantilla" value="#{plantillasBean.nombre}" label="Nombre de la plantilla" />
+								<b:inputText placeholder="Nombre de la plantilla" value="#{plantillasBean.nombre}" label="Nombre de la plantilla (*)" maxlength="30" />
 							</b:column>
 						</b:row>
 						<b:row>
 							<b:column large-screen="12"><label>Seleccionar plantilla</label></b:column>
 							<b:column large-screen="12" styleClass="form-group">
 								<p:fileUpload class="carga-archivos" fileUploadListener="#{plantillasBean.handleFileUpload}" mode="advanced" auto="true" update="cargaNombreArchivo" 
-								dragDropSupport="true" multiple="true" sizeLimit="15000000" />
+								dragDropSupport="true" multiple="true" sizeLimit="15000000" label="Seleccionar" />
 							</b:column>
 							<b:column large-screen="12" styleClass="form-group">
 								<h:outputText id="cargaNombreArchivo" value="Archivo cargado: #{plantillasBean.nombeArchivoCargado}" />
@@ -113,13 +113,13 @@
 			</b:modal>
 			
 			<!-- MODAL EDITAR -->
-			<b:modal id="modalEditarPlantilla" title="Editar datos area" styleClass="modalEditarPlantilla" >
+			<b:modal id="modalEditarPlantilla" title="Editar datos plantilla" styleClass="modalEditarPlantilla" >
 	 			<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
 							<b:column large-screen="12" styleClass="form-group">
-								<b:inputText placeholder="Nombre de la plantilla" label="Nombre de la plantilla" 
-								value="#{plantillasBean.plantillaSeleccionada.nombre_Tipo_Documento}" />
+								<b:inputText placeholder="Nombre de la plantilla" label="Nombre de la plantilla (*)" 
+								value="#{plantillasBean.plantillaSeleccionada.nombre_Tipo_Documento}" maxlength="30" />
 							</b:column>
 						</b:row>
 						<b:row>
@@ -132,7 +132,7 @@
 							<b:column large-screen="12"><label>Seleccionar plantilla</label></b:column>
 							<b:column large-screen="12" styleClass="form-group">
 								<p:fileUpload class="carga-archivos" fileUploadListener="#{plantillasBean.handleFileUpload}" mode="advanced" auto="true" update="editarNombreArchivo" 
-								dragDropSupport="true" multiple="true" sizeLimit="15000000" />
+								dragDropSupport="true" multiple="true" sizeLimit="15000000" label="Seleccionar" />
 							</b:column>
 							<b:column large-screen="12" styleClass="form-group">
 								<h:outputText id="editarNombreArchivo" value="Archivo cargado: #{plantillasBean.nombeArchivoCargado}" />

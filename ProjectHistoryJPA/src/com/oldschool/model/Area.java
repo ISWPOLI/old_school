@@ -10,6 +10,7 @@ import java.util.List;
  * 
  */
 @Entity
+@Table(name="area")
 @NamedQueries({
 	@NamedQuery(name="Area.findAll", query="SELECT a FROM Area a"),
 	@NamedQuery(name="Area.findByNombre", query="SELECT a FROM Area a WHERE LOWER(a.nombre_Area) LIKE :nombre_Area")
@@ -28,6 +29,10 @@ public class Area implements Serializable {
 	private List<Proyecto> proyectos;
 
 	public Area() {
+	}
+	
+	public Area(int idArea) {
+		this.id_Area = idArea;
 	}
 
 	public int getId_Area() {

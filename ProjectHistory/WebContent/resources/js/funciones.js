@@ -1,8 +1,83 @@
-
+/*VALIDACIONES*/
 $(document).ready(function(){
+	//Se asignan las validaciones a los campos "moneda" y "numero"
+	asignarValidacionesNumero();
+	asignarValidacionesMoneda();
+	//Otros
 	estilizarHorario();
 	beforeUpdate();
 });
+
+function asignarValidacionesNumero(){
+	$('.numero').keypress(validarKeyPressNumero);
+	$('.numero').trigger( 'change' ).val('');
+}
+
+//validar textos moneda
+function asignarValidacionesMoneda(){
+	
+	$('.moneda').keypress(validarKeyPressNumero);
+	$('.moneda').change(function( e ){$( this ).val( formatoMoneda( $(this).val() ) );});
+	$('.moneda').keyup(function( e ){$( this ).val( formatoMoneda( $(this).val() ) );});
+	$('.moneda').trigger( 'change' ).val('');
+	
+	$( ".labelMoneda" ).each(function( index ) {
+		$( this ).text( formatoMoneda( $(this).text() ) )
+	});
+	
+}
+
+//formato moneda
+var formatoMoneda = function(num){
+	var str = num.toString().replace("$", ""), parts = false, output = [], i = 1, formatted = null;
+	if(str.indexOf("") > 0) {
+		parts = str.split(",");
+		str = parts[0];
+	}
+	str = str.split("").reverse();
+	for(var j = 0, len = str.length; j < len; j++) {
+		if(str[j] != ",") {
+			output.push(str[j]);
+			if(i%3 == 0 && j < (len - 1)) {
+				output.push(",");
+			}
+			i++;
+		}
+	}
+	formatted = output.reverse().join("");
+//	return("$" + formatted + ((parts) ? "." + parts[1].substr(0, 2) : ""));
+	return(formatted + ((parts) ? "." + parts[1].substr(0, 2) : ""));
+};
+
+//Validar cajas numericas
+function validarKeyPressNumero(event){
+	var charCode = (event.which) ? event.which : event.keyCode; 
+	/**
+	 * CharCode 48 = 0
+	 * CharCode 57 = 9
+	 * CharCode 8 = BackSpace
+	 * CharCode 9 = Tab
+	 * CharCode 49 = Supr
+	 */
+	if(charCode < 48 || charCode > 57) {
+		if(charCode!=8 && charCode!=9 && charCode!=49)
+			return false;
+	}
+}
+
+function noCopyCutPaste(data) {
+	var myInput = data;
+	myInput.onpaste = function(e) {
+		e.preventDefault();
+	}
+	myInput.oncopy = function(e) {
+		e.preventDefault();
+	}
+	myInput.oncut = function(e) {
+		e.preventDefault();
+	}
+}
+
 function igualarAltoItems(objeto){
     var maxHeight = 150;
     //CICLO IMG
@@ -54,8 +129,6 @@ function estilizarHorario(){
 	$("div.fc-time").prepend('<i class="fa fa-clock-o" aria-hidden="true" style="margin:0 3px 0 3px" />');
 }
 
-
-
 function beforeUpdate(){
 	$('.ui-datalist-content.ui-widget-content').addClass('row');
 	$('.ui-paginator.ui-paginator-bottom.ui-widget-header.ui-corner-bottom').addClass('row');
@@ -91,7 +164,5 @@ function beforeUpdate(){
 		}
 	} catch (e) {
 		
-	}
-		
+	}		
 }
-

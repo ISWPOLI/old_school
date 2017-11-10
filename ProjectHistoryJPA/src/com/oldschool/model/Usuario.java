@@ -11,6 +11,7 @@ import java.util.List;
  * 
  */
 @Entity
+@Table(name="usuario")
 @NamedQueries({
 	@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u ORDER BY u.activo DESC"),
 	@NamedQuery(name="Usuario.findByEstado", query="SELECT u FROM Usuario u WHERE u.activo = :estado"),

@@ -45,7 +45,7 @@
 								<h:outputLabel value="Digite el nombre del usuario que desea filtrar" />
 							</b:column>
 							<b:column large-screen="3">
-								<b:inputText placeholder="Ej: Daniel Rodriguez" value="#{usuariosBean.filtroNombre}" />
+								<b:inputText placeholder="Ej: Daniel Rodriguez" value="#{usuariosBean.filtroNombre}" maxlength="40" />
 							</b:column>
 							<b:column large-screen="2">
 								<b:selectOneMenu value="#{usuariosBean.filtroEstado}">
@@ -94,53 +94,60 @@
 			
 			<!-- MODAL AGREGAR -->
 			<b:modal id="modalNuevoUsuario" title="Nuevo usuario" styleClass="modalNuevoUsuario" >
-				<b:row>
-					<b:column large-screen="10" offset="1">
-						<b:row>
-							<b:column large-screen="3"><label>Nombre(s)</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre" value="#{usuariosBean.nombre}" />
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="3"><label>Apellidos</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Apellidos" value="#{usuariosBean.apellido}" />
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="3"><label>Genero</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:selectOneMenu value="#{usuariosBean.genero}">
-									<f:selectItem itemValue="M" itemLabel="Masculino" />
-									<f:selectItem itemValue="F" itemLabel="Femenino" />
-								</b:selectOneMenu>
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="3"><label>Usuario</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre de usuario" value="#{usuariosBean.username}" />
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="3"><label>Contraseña</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputSecret placeholder="Contraseña" value="#{usuariosBean.pass}" />
-							</b:column>
-						</b:row>
-		 			</b:column>
-	 			</b:row>
-			    <f:facet name="footer">
 					<b:row>
-						<b:column largeScreen="6">
-							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
-						</b:column>
-						<b:column largeScreen="6">
-							<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{usuariosBean.crearUsuario()}" dismiss="modal" />
-						</b:column>
-					</b:row>
-			    </f:facet>
+						<b:column large-screen="10" offset="1">
+							<b:row>
+								<b:column large-screen="4"><label>Nombre(s) (*)</label></b:column>
+								<b:column large-screen="8" styleClass="form-group">
+									<b:inputText placeholder="Nombre" value="#{usuariosBean.nombre}" maxlength="40" />
+								</b:column>
+							</b:row>
+							<b:row>
+								<b:column large-screen="4"><label>Apellidos (*)</label></b:column>
+								<b:column large-screen="8" styleClass="form-group">
+									<b:inputText placeholder="Apellidos" value="#{usuariosBean.apellido}" maxlength="40" />
+								</b:column>
+							</b:row>
+							<b:row>
+								<b:column large-screen="4"><label>Genero (*)</label></b:column>
+								<b:column large-screen="8" styleClass="form-group">
+									<b:selectOneMenu value="#{usuariosBean.genero}">
+										<f:selectItem itemValue="M" itemLabel="Masculino" />
+										<f:selectItem itemValue="F" itemLabel="Femenino" />
+									</b:selectOneMenu>
+								</b:column>
+							</b:row>
+							<b:row>
+								<b:column large-screen="4"><label>Usuario (*)</label></b:column>
+								<b:column large-screen="8" styleClass="form-group">
+									<b:inputText placeholder="Nombre de usuario" value="#{usuariosBean.username}" maxlength="20" />
+								</b:column>
+							</b:row>
+							<b:row>
+								<b:column large-screen="4"><label>Contraseña (*)</label></b:column>
+								<b:column large-screen="8" styleClass="form-group">
+									<b:inputSecret placeholder="Contraseña" value="#{usuariosBean.pass}" maxlength="20" />
+								</b:column>
+							</b:row>
+								<b:row>
+									<b:column large-screen="12">
+										<b:selectOneMenu value="#{usuariosBean.rolesSeleccionados}" label="Seleccionar Rol">
+											<f:selectItems value="#{usuariosBean.listaRoles}" var="rol" itemLabel="#{rol.nombre_Rol}" itemValue="#{rol.id_Rol}" />
+										</b:selectOneMenu>
+									</b:column>
+								</b:row>
+			 			</b:column>
+		 			</b:row>
+				    <f:facet name="footer">
+						<b:row>
+							<b:column largeScreen="6">
+								<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+							</b:column>
+							<b:column largeScreen="6">
+								<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{usuariosBean.crearUsuario()}" dismiss="modal" />
+							</b:column>
+						</b:row>
+				    </f:facet>
 			</b:modal>
 			
 			<!-- MODAL EDITAR -->
@@ -148,20 +155,20 @@
 				<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
-							<b:column large-screen="3"><label>Nombre(s)</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Nombre" value="#{usuariosBean.usuarioSeleccionado.nombre_Usuario}" />
+							<b:column large-screen="4"><label>Nombre(s) (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="Nombre" value="#{usuariosBean.usuarioSeleccionado.nombre_Usuario}" maxlength="40" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Apellidos</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Apellidos" value="#{usuariosBean.usuarioSeleccionado.apellido}" />
+							<b:column large-screen="4"><label>Apellidos (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="Apellidos" value="#{usuariosBean.usuarioSeleccionado.apellido}" maxlength="40" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Genero</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
+							<b:column large-screen="4"><label>Genero (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
 								<b:selectOneMenu value="#{usuariosBean.usuarioSeleccionado.genero}">
 									<f:selectItem itemValue="M" itemLabel="Masculino" />
 									<f:selectItem itemValue="F" itemLabel="Femenino" />
@@ -169,17 +176,24 @@
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Usuario</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText value="#{usuariosBean.usuarioSeleccionado.login}" readonly="true" />
+							<b:column large-screen="4"><label>Usuario (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText value="#{usuariosBean.usuarioSeleccionado.login}" readonly="true" maxlength="20" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Estado</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
+							<b:column large-screen="4"><label>Estado (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
 								<b:selectOneMenu value="#{usuariosBean.usuarioSeleccionado.activo}">
 									<f:selectItem itemValue="1" itemLabel="Activo" />
 									<f:selectItem itemValue="0" itemLabel="Inactivo" />
+								</b:selectOneMenu>
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="12">
+								<b:selectOneMenu value="#{usuariosBean.rolesSeleccionados}" label="Seleccionar Rol">
+									<f:selectItems value="#{usuariosBean.listaRoles}" var="rol" itemLabel="#{rol.nombre_Rol}" itemValue="#{rol.id_Rol}" />
 								</b:selectOneMenu>
 							</b:column>
 						</b:row>

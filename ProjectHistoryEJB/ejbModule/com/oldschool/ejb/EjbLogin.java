@@ -1,7 +1,12 @@
 package com.oldschool.ejb;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -48,6 +53,7 @@ public class EjbLogin implements EjbLoginLocal {
 	@Override
 	public boolean actualizarFechaAcceso(int idUsuario) throws Exception {
 		Query query = em.createNativeQuery("UPDATE usuario SET Fecha_Ultimo_Acceso = ? WHERE Id_usuario = ?");
+//		Date fecha = obtenerTiempoActual(TimeZone.getTimeZone("GMT-5"));
 		query.setParameter(1, new Date());
 		query.setParameter(2, idUsuario);
 		
@@ -57,6 +63,20 @@ public class EjbLogin implements EjbLoginLocal {
 		}
 		
 		return false;
+	}
+	
+	private Date obtenerTiempoActual(TimeZone timeZone){
+		try {
+			DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Calendar cal = Calendar.getInstance(timeZone);
+			String calStr = cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.MONTH)+1 + "/" + cal.get(Calendar.DAY_OF_MONTH) + " " + 
+					cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE) + ":" + cal.get(Calendar.SECOND);
+			Date fecha = formatter.parse( calStr );
+			return fecha;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

@@ -10,6 +10,7 @@ import java.util.List;
  * 
  */
 @Entity
+@Table(name="cliente")
 @NamedQueries({
 	@NamedQuery(name="Cliente.findAll", query="SELECT c FROM Cliente c"),
 	@NamedQuery(name="Cliente.findByEstado", query="SELECT c FROM Cliente c WHERE c.activo = :estado"),
@@ -45,6 +46,10 @@ public class Cliente implements Serializable {
 	private List<Proyecto> proyectos;
 
 	public Cliente() {
+	}
+	
+	public Cliente(int idCliente) {
+		this.id_Cliente = idCliente;
 	}
 
 	public int getId_Cliente() {

@@ -1,5 +1,6 @@
 package com.oldschool.bean;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -254,7 +255,7 @@ public class PlantillasBean implements Serializable {
 				InputStream is = blob.getBinaryStream();
 				
 				String nombreArchivo = this.plantillaSeleccionada.getNombre_Tipo_Documento();
-				String pathArchivo = System.getProperty("java.io.tmpdir") + nombreArchivo + "." + this.plantillaSeleccionada.getTipo_archivo();
+				String pathArchivo = System.getProperty("java.io.tmpdir") + File.separator + nombreArchivo + "." + this.plantillaSeleccionada.getTipo_archivo();
 				FileOutputStream fos = new FileOutputStream( pathArchivo );
 				int b = 0;
 				while ((b = is.read()) != -1){

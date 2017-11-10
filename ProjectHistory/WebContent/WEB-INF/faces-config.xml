@@ -37,6 +37,16 @@
 			<to-view-id>/pages/Cliente/controlClientes.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>control-proyectos</from-outcome>
+			<to-view-id>/pages/Proyecto/controlProyectos.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>reporte-plantillas</from-outcome>
+			<to-view-id>/pages/Reportes/reportePlantillas.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 	
 	<navigation-rule>

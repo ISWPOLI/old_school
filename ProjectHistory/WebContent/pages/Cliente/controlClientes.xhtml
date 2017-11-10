@@ -45,7 +45,7 @@
 								<h:outputLabel value="Digite el nombre del cliente que desea filtrar" />
 							</b:column>
 							<b:column large-screen="3">
-								<b:inputText placeholder="Ej: Daniel Rodriguez" value="#{clientesBean.filtroNombre}" />
+								<b:inputText placeholder="Ej: Banco Pichincha" value="#{clientesBean.filtroNombre}" maxlength="60" />
 							</b:column>
 							<b:column large-screen="2">
 								<b:selectOneMenu value="#{clientesBean.filtroEstado}">
@@ -98,33 +98,33 @@
 				<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
-							<b:column large-screen="3"><label>Raz&oacute;n social</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Razon social" value="#{clientesBean.nombre}" />
+							<b:column large-screen="4"><label>Raz&oacute;n social (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="Razon social" value="#{clientesBean.nombre}" maxlength="60" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>NIT</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="NIT" value="#{clientesBean.nit}" />
+							<b:column large-screen="4"><label>NIT (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText class="numero" placeholder="NIT" value="#{clientesBean.nit}" maxlength="15" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Direcci&oacute;n</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Dirección" value="#{clientesBean.direccion}" />
+							<b:column large-screen="4"><label>Direcci&oacute;n (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="Dirección" value="#{clientesBean.direccion}" maxlength="100" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Telefono</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Telefono" value="#{clientesBean.telefono}" />
+							<b:column large-screen="4"><label>Telefono (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText class="numero" placeholder="Telefono" value="#{clientesBean.telefono}" maxlength="11" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Email</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="abc@mail.com" value="#{clientesBean.email}" />
+							<b:column large-screen="4"><label>Email (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="abc@mail.com" value="#{clientesBean.email}" maxlength="20" />
 							</b:column>
 						</b:row>
 		 			</b:column>
@@ -146,38 +146,38 @@
 				<b:row>
 					<b:column large-screen="10" offset="1">
 						<b:row>
-							<b:column large-screen="3"><label>Raz&oacute;n social</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Razon social" value="#{clientesBean.clienteSeleccionado.razon_Social}" />
+							<b:column large-screen="4"><label>Raz&oacute;n social (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="Razon social" value="#{clientesBean.clienteSeleccionado.razon_Social}" maxlength="60" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>NIT</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="NIT" value="#{clientesBean.clienteSeleccionado.nit}" />
+							<b:column large-screen="4"><label>NIT (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText class="numero" placeholder="NIT" value="#{clientesBean.clienteSeleccionado.nit}" maxlength="15" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Direcci&oacute;n</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Dirección" value="#{clientesBean.clienteSeleccionado.direccion}" />
+							<b:column large-screen="4"><label>Direcci&oacute;n (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="Dirección" value="#{clientesBean.clienteSeleccionado.direccion}" maxlength="100" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Telefono</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="Telefono" value="#{clientesBean.clienteSeleccionado.telefono}" />
+							<b:column large-screen="4"><label>Telefono (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText class="numero" placeholder="Telefono" value="#{clientesBean.clienteSeleccionado.telefono}" maxlength="11" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Email</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
-								<b:inputText placeholder="abc@mail.com" value="#{clientesBean.clienteSeleccionado.email}" />
+							<b:column large-screen="4"><label>Email (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
+								<b:inputText placeholder="abc@mail.com" value="#{clientesBean.clienteSeleccionado.email}" maxlength="20" />
 							</b:column>
 						</b:row>
 						<b:row>
-							<b:column large-screen="3"><label>Estado</label></b:column>
-							<b:column large-screen="9" styleClass="form-group">
+							<b:column large-screen="4"><label>Estado (*)</label></b:column>
+							<b:column large-screen="8" styleClass="form-group">
 								<b:selectOneMenu value="#{clientesBean.clienteSeleccionado.activo}">
 									<f:selectItem itemValue="1" itemLabel="Activo" />
 									<f:selectItem itemValue="0" itemLabel="Inactivo" />

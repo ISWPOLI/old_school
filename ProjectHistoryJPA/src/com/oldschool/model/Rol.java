@@ -10,6 +10,7 @@ import java.util.List;
  * 
  */
 @Entity
+@Table(name="rol")
 @NamedQuery(name="Rol.findAll", query="SELECT r FROM Rol r")
 public class Rol implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -29,7 +30,7 @@ public class Rol implements Serializable {
 	private String nombre_Rol;
 
 	//bi-directional many-to-many association to Usuario
-	@ManyToMany
+	@ManyToMany(cascade=CascadeType.PERSIST)
 	@JoinTable(
 		name="rol_usuario"
 		, joinColumns={

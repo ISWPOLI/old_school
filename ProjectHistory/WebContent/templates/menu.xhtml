@@ -16,14 +16,20 @@
 			<c:if test="#{loginBean.sesionBean.usuario.isAdmin()}">
 				<b:dropMenu icon-awesome="th" value="Administrar">
 					<b:navLink value="Areas" icon-awesome="cubes" outcome="control-areas"></b:navLink>
-					<b:navLink value="Documentos" icon-awesome="file-text" outcome="control-plantillas"></b:navLink>
+					<b:navLink value="Plantillas" icon-awesome="file-text" outcome="control-plantillas"></b:navLink>
 					<b:navLink value="Clientes" icon-awesome="handshake-o" outcome="control-clientes"></b:navLink>
+					<b:navLink value="Proyectos" icon-awesome="suitcase" outcome="control-proyectos"></b:navLink>
+					<b:navLink />
 					<b:navLink value="Usuarios" icon-awesome="users" outcome="control-usuarios"></b:navLink>
 				</b:dropMenu>
 			</c:if>
 			
 			<!-- MENU CONSULTOR -->
 			<c:if test="#{loginBean.sesionBean.usuario.isConsultor()}">
+				<b:navLink value="Ver proyectos" icon-awesome="lightbulb-o" ></b:navLink>
+				<b:dropMenu icon-awesome="th" value="Reportes">
+					<b:navLink value="Plantillas mas usadas" icon-awesome="pie-chart" outcome="reporte-plantillas"></b:navLink>
+				</b:dropMenu>
 			</c:if>
 			
 			<!-- MENU APROBADOR -->

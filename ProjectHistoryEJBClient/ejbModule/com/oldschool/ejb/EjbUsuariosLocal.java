@@ -15,4 +15,7 @@ public interface EjbUsuariosLocal {
 	public List<Usuario> filtrarUsuariosPorNombreYEstado(String nombre, byte estado) throws Exception;
 	public boolean actualizarDatosUsuario(Usuario usuario) throws Exception;
 	public boolean cambiarEstadoDeUsuario(int idUsuario, byte estado) throws Exception;
+
+	public boolean registrarUsuario(Usuario usuario) throws Exception;
+
 }

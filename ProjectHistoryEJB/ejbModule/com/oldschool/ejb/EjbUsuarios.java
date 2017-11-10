@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import com.oldschool.model.Rol;
 import com.oldschool.model.Usuario;
 
 @Stateless(name="EjbUsuariosLocal", mappedName="ejb/EjbUsuariosLocal")
@@ -84,7 +85,7 @@ public class EjbUsuarios implements EjbUsuariosLocal {
 		
 		int result = query.executeUpdate();
 		if(result>=1){
-			return true;
+			return asociarRoles(usuario.getId_usuario(), usuario.getRols());
 		}
 		
 		return false;
@@ -98,6 +99,39 @@ public class EjbUsuarios implements EjbUsuariosLocal {
 		
 		int result = query.executeUpdate();
 		if(result>=1){
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean registrarUsuario(Usuario usuario) throws Exception {
+		em.persist(usuario);
+		em.flush();
+		int idUsuario = usuario.getId_usuario();
+		if(asociarRoles(idUsuario, usuario.getRols())){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean asociarRoles(int idUsuario, List<Rol> roles) throws Exception{
+		Query queryDel = em.createNativeQuery("DELETE FROM rol_usuario WHERE Id_Usuario = ?");
+		queryDel.setParameter(1, idUsuario);
+		queryDel.executeUpdate();
+		
+		int cantEjec = 0; //Cantidad de ejecuciones
+		for (Rol rol : roles) {
+			Query query = em.createNativeQuery("INSERT INTO rol_usuario VALUES (?, ?)");
+			query.setParameter(1, idUsuario);
+			query.setParameter(2, rol.getId_Rol());
+			if(query.executeUpdate() > 0){
+				cantEjec++;
+			}
+		}
+		
+		if(cantEjec == roles.size()){
 			return true;
 		}
 		

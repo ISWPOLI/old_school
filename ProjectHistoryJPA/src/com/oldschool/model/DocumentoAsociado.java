@@ -11,7 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="documento_asociado")
-@NamedQuery(name="DocumentoAsociado.findAll", query="SELECT d FROM DocumentoAsociado d")
+@NamedQueries({
+	@NamedQuery(name="DocumentoAsociado.findAll", query="SELECT d FROM DocumentoAsociado d"),
+	@NamedQuery(name="DocumentoAsociado.findByProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :id_Proyecto")
+	
+})
 public class DocumentoAsociado implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -39,6 +43,16 @@ public class DocumentoAsociado implements Serializable {
 	@JoinColumn(name="Id_Usuario")
 	private Usuario usuario;
 
+	@Column(name="tamanio_documento")
+	private long tamanio_documento;
+	
+	@Lob
+	@Column(name="Documento_asociado")
+	private byte[] documentoAsociado;
+	
+	@Column(name="tipo_archivo")
+	private String tipo_archivo;
+	
 	public DocumentoAsociado() {
 	}
 
@@ -90,4 +104,22 @@ public class DocumentoAsociado implements Serializable {
 		this.usuario = usuario;
 	}
 
+	public byte[] getDocumentoAsociado() {
+		return documentoAsociado;
+	}
+	public void setDocumentoAsociado(byte[] documentoAsociado) {
+		this.documentoAsociado = documentoAsociado;
+	}
+	public long getTamanio_documento() {
+		return tamanio_documento;
+	}
+	public void setTamanio_documento(long tamanio_documento) {
+		this.tamanio_documento = tamanio_documento;
+	}
+	public String getTipo_archivo() {
+		return tipo_archivo;
+	}
+	public void setTipo_archivo(String tipo_archivo) {
+		this.tipo_archivo = tipo_archivo;
+	}
 }

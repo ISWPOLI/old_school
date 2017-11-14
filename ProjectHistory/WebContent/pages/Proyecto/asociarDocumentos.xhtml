@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" 
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="../../templates/defaultLayout.xhtml">
+	<ui:define name="title">
+		<h:outputText value="Control de proyectos" />
+	</ui:define>
+	
+	<!-- Título pantalla -->
+	<ui:define name="titulo">
+		<b:row>
+			<h2>Control de proyectos</h2>
+		</b:row>
+	</ui:define>
+	<!-- Miga de pan -->
+	<ui:define name="breadcrumb">
+		<b:row>
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><h:link outcome="home">Inicio</h:link></li>
+			  <li class="breadcrumb-item"><h:link outcome="control-proyectos">Control de proyectos</h:link></li>
+			  <li class="breadcrumb-item active">Asociar documentos</li>
+			</ol>
+		</b:row>
+	</ui:define>
+	
+	<!-- Contenido de página -->
+	<ui:define name="content">
+		<h:form id="form" styleClass="form-horizontal" >
+			
+			<b:row>
+				<b:column large-screen="4" >
+					<b:thumbnail styleClass="thumb-actividad">
+						<div class="caption text-center">
+							<h3>
+								<b:iconAwesome name="suitcase"></b:iconAwesome>
+								#{proyectosBean.proyectoSeleccionado.nombre_Proyecto}
+							</h3>
+							<div class="text-justify collapse in">
+								<p><label>Ultima modificaci&oacute;n:</label>&nbsp;#{proyectosBean.proyectoSeleccionado.fecha_Creacion_Proyecto}</p>
+								<p><label>Cliente:</label>&nbsp;#{proyectosBean.proyectoSeleccionado.cliente.razon_Social}</p>
+								<p><label>&Aacute;rea:</label>&nbsp;#{proyectosBean.proyectoSeleccionado.area.nombre_Area}</p>
+								<p><label>Usuario creador:</label>&nbsp;#{proyectosBean.proyectoSeleccionado.usuario.nombreCompleto}</p>
+								<p><label>Estado:</label>&nbsp;#{proyectosBean.proyectoSeleccionado.estado}</p>
+								<p>#{proyectosBean.proyectoSeleccionado.descripcion}</p>
+							</div>
+						</div>
+					</b:thumbnail>
+				</b:column>
+				
+				<b:column large-screen="8">
+					<b:row>
+						<b:column>
+							<b:panel collapsible="false" styleClass="panel-negro" >
+								<f:facet name="heading">
+									<i class="fa fa-filter" style="padding-right: 10px" />
+									<h:outputText value="Filtro de proyectos" />
+								</f:facet>
+								<b:row>
+									<b:column large-screen="4">
+										
+									</b:column>
+								</b:row>
+								<b:row>
+									<b:column large-screen="4">
+										<b:selectOneMenu value="#{proyectosBean.filtroTipoDoc}">
+											<f:selectItems value="#{proyectosBean.listaTipoDocumentos}" var="tipoDoc" itemLabel="#{tipoDoc.nombre_Tipo_Documento}" itemValue="#{tipoDoc.id_Tipo_Documento}" />
+										</b:selectOneMenu>
+									</b:column>
+									<b:column large-screen="4">
+										<b:inputText placeholder="Ej: Usabilidad" value="#{proyectosBean.filtroNombreDoc}" maxlength="30" />
+									</b:column>
+									<b:column large-screen="4">
+										<b:commandButton value="Filtrar documentos" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{proyectosBean.filtrarProyectos()}" update="form:tabla" />
+									</b:column>
+								</b:row>
+							</b:panel>
+						</b:column>
+					</b:row>
+					
+					<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
+						<b:dataTable id="tabla" value="#{proyectosBean.listaDocumentosAsociados}" styleClass="no-length-menu" var="documento" lang="es" border="false" searching="false" pageLength="10">
+							<b:dataTableColumn label="Nombre" value="#{documento.nombre_Documento}" order="asc" />
+							<b:dataTableColumn label="Tipo" value="#{documento.tipoDocumento.nombre_Tipo_Documento}" />
+							<b:dataTableColumn label="Fecha modificacion" value="#{documento.fecha_Cargue_Documento}" />
+							<b:dataTableColumn label="Autor" value="#{documento.usuario.nombreCompleto}" />
+							
+							<b:dataTableColumn label="Opciones">
+								<p:commandLink ajax="false" styleClass="opciones-tabla" rendered="#{documento.tamanio_documento gt 0}" >
+									<b:iconAwesome name="download" tooltip="Descargar documento" />
+									<f:setPropertyActionListener value="#{documento}" target="#{proyectosBean.documentoSeleccionado}" />
+									<p:fileDownload value="#{proyectosBean.descargarDocumento()}" />
+								</p:commandLink>
+								<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarDocumento').modal()" update="form:modalEditarDocumento" >
+									<b:iconAwesome name="upload" tooltip="Cargar documento" />
+									<f:setPropertyActionListener value="#{documento}" target="#{proyectosBean.documentoSeleccionado}" />
+								</p:commandLink>
+							</b:dataTableColumn>
+						</b:dataTable>
+					</b:row>
+				</b:column>
+			</b:row>
+			
+			<b:modal id="modalEditarDocumento" title="Cargar nuevo documento" styleClass="modalEditarDocumento" >
+	 			<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="12" styleClass="form-group">
+								<b:inputText label="Tipo de documento" disabled="true"
+								value="#{proyectosBean.documentoSeleccionado.tipoDocumento.nombre_Tipo_Documento}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="12" styleClass="form-group">
+								<b:inputText placeholder="Nombre del documento" label="Nombre del documento(*)" disabled="false"
+								value="#{proyectosBean.nombreNuevoDocumento}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="12" styleClass="form-group">
+								<b:inputText label="Autor" disabled="true"
+								value="#{proyectosBean.documentoSeleccionado.usuario.nombreCompleto}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="12" styleClass="form-group">
+								<b:inputText label="Ultima modificación" disabled="true"
+								value="#{proyectosBean.documentoSeleccionado.fecha_Cargue_Documento}" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="12"><label>Seleccionar documento</label></b:column>
+							<b:column large-screen="12" styleClass="form-group">
+								<p:fileUpload class="carga-archivos" fileUploadListener="#{proyectosBean.handleFileUpload}" mode="advanced" auto="true" update="editarNombreArchivo" 
+								dragDropSupport="true" multiple="true" sizeLimit="15000000" label="Seleccionar" />
+							</b:column>
+							<b:column large-screen="12" styleClass="form-group">
+								<h:outputText id="editarNombreArchivo" value="Archivo cargado: #{proyectosBean.nombeArchivoCargado}" />
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{proyectosBean.cargarDocumento()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

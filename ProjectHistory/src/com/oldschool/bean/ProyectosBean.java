@@ -1,6 +1,13 @@
 package com.oldschool.bean;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,17 +18,24 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
+import javax.sql.rowset.serial.SerialBlob;
+
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.oldschool.ejb.EjbGenericoLocal;
 import com.oldschool.model.Area;
 import com.oldschool.model.Cliente;
+import com.oldschool.model.DocumentoAsociado;
 import com.oldschool.model.Proyecto;
+import com.oldschool.model.TipoDocumento;
 import com.oldschool.util.Mensaje;
 import com.oldschool.util.Util;
 
 @ManagedBean(name= ProyectosBean.BEAN_NAME)
-@ViewScoped
+@SessionScoped
 public class ProyectosBean implements Serializable {
 
 	/*Variables Bean*/
@@ -48,9 +62,20 @@ public class ProyectosBean implements Serializable {
 	//Formulario de edicion
 	private int idAreaMod;
 	private int idClienteMod;
+	//Formulario de asociacion
+	private List<TipoDocumento> listaTipoDocumentos;
+	private List<DocumentoAsociado> listaDocumentosAsociados;
+	private DocumentoAsociado documentoSeleccionado;
+	private String nombreNuevoDocumento;
+	private String nombeArchivoCargado;
+	private byte[] tempBlob;
+	private long tamanioDocumento;
 	
-	//Filtro usuario
+	//Filtro formulario principal
 	private String filtroNombre;
+	//Filtro formulario asociacion
+	private int filtroTipoDoc;
+	private String filtroNombreDoc;
 	
 	/*Métodos privados*/
 	@SuppressWarnings("unchecked")
@@ -75,6 +100,26 @@ public class ProyectosBean implements Serializable {
 	private void cargarListaClientes(){
 		try {
 			listaClientes = (List<Cliente>)(List<?>)ejbGenerico.listarTodo(new Cliente());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void cargarListaTipoDocumentos(){
+		try {
+			listaTipoDocumentos = (List<TipoDocumento>)(List<?>)ejbGenerico.listarTodo(new TipoDocumento());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void cargarListaDocumentos(int idProyecto){
+		try {
+			Map<String, Object> parametros = new HashMap<>();
+			parametros.put("id_Proyecto", idProyecto);
+			this.listaDocumentosAsociados = (List<DocumentoAsociado>)(List<?>)ejbGenerico.listarPorQuery(new DocumentoAsociado(), "findByProyecto", parametros);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -117,6 +162,17 @@ public class ProyectosBean implements Serializable {
 		this.idArea = 0;
 		this.idCliente = 0;
 		this.filtroNombre = null;
+	}
+	
+	public void limpiarAsociacionForm(){
+		this.documentoSeleccionado = null;
+		this.nombeArchivoCargado = null;
+		this.tempBlob = null;
+		this.tamanioDocumento = 0;
+		this.filtroTipoDoc = 0;
+		this.filtroNombreDoc = null;
+		this.listaDocumentosAsociados = new ArrayList<>();
+		this.listaTipoDocumentos = new ArrayList<>();
 	}
 	
 	public void crearProyecto(){
@@ -220,6 +276,109 @@ public class ProyectosBean implements Serializable {
 		}
 	}
 	
+	/*Formulario de carga de documentos*/
+	public String irAsociarDocumentos(){
+		if(this.proyectoSeleccionado!=null && !Util.isEmpty(this.proyectoSeleccionado.getId_Proyecto())){
+			//Cargar página
+			limpiarAsociacionForm();
+			cargarListaTipoDocumentos();
+			cargarListaDocumentos(this.proyectoSeleccionado.getId_Proyecto());
+			//Redireccionar
+			return "irAsociarDocumentos";
+		}
+		return "";
+	}
+	
+	@SuppressWarnings("resource")
+	public StreamedContent descargarDocumento(){
+		StreamedContent download = new DefaultStreamedContent();
+		try {
+			if(this.documentoSeleccionado!=null && this.documentoSeleccionado.getDocumentoAsociado()!=null){
+				
+				Blob blob = new SerialBlob( this.documentoSeleccionado.getDocumentoAsociado() );
+				InputStream is = blob.getBinaryStream();
+				
+				String nombreArchivo = this.documentoSeleccionado.getNombre_Documento();
+				String pathArchivo = System.getProperty("java.io.tmpdir") + File.separator + nombreArchivo + "." + this.documentoSeleccionado.getTipo_archivo();
+				FileOutputStream fos = new FileOutputStream( pathArchivo );
+				int b = 0;
+				while ((b = is.read()) != -1){
+				    fos.write(b); 
+				}
+				
+				is.close();
+				fos.flush();
+
+				InputStream stream = new FileInputStream( pathArchivo );
+				download = new DefaultStreamedContent(stream, Files.probeContentType( Paths.get(pathArchivo) ), this.documentoSeleccionado.getNombre_Documento() + "." + this.documentoSeleccionado.getTipo_archivo());
+				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return download;
+	}
+	
+	public void handleFileUpload(FileUploadEvent event) {
+		try {
+			//System.out.println("Llego al evento que maneja la carga");
+			this.nombeArchivoCargado = event.getFile().getFileName();
+			this.tempBlob = event.getFile().getContents();
+			this.tamanioDocumento = event.getFile().getSize();
+			if(this.tamanioDocumento > 1000000){
+				this.tamanioDocumento *= 0.001;
+			}else if(this.tamanioDocumento > 1000){
+				this.tamanioDocumento *= 0.001;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+	
+	public void cargarDocumento(){
+		
+		try {
+			//Validar campos vacios
+			boolean validar = false;
+			if(this.documentoSeleccionado==null || Util.isEmpty(this.documentoSeleccionado.getNombre_Documento()) || this.tempBlob==null){
+				validar = true;
+			}
+			//Validar si el nombre de usuario ya existe
+			if(!validar){
+				//Obtener extension de documentol
+				String[] nombreDoc = nombeArchivoCargado.split("\\.");
+				String extension = nombreDoc.length > 0 ? nombreDoc[nombreDoc.length-1] : "txt";
+				//Sobre cargar el objeto antes de guardarlo
+				documentoSeleccionado.setNombre_Documento(this.nombreNuevoDocumento);
+				documentoSeleccionado.setFecha_Cargue_Documento(new Date());
+				if(sesionBean.getUsuario() != null){
+					documentoSeleccionado.setUsuario(sesionBean.getUsuario());						
+				}
+				documentoSeleccionado.setDocumentoAsociado(this.tempBlob);
+				documentoSeleccionado.setTamanio_documento(this.tamanioDocumento);
+				documentoSeleccionado.setTipo_archivo(extension);
+				//Registrar plantilla
+				boolean resultado = ejbGenerico.actualizarObjeto(documentoSeleccionado);
+				if(resultado){
+					Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizó el documento correctamente");
+					limpiarAsociacionForm();
+					cargarListaDocumentos(this.proyectoSeleccionado.getId_Proyecto());
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando el documento, por favor intentelo de nuevo más tarde.");
+				}
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
+			}
+			
+			
+		} catch (Exception e) {
+			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+			e.printStackTrace();
+		}
+	
+	}
+	
 	/*Get & Set*/
 	public SesionBean getSesionBean() {
 		return sesionBean;
@@ -227,92 +386,69 @@ public class ProyectosBean implements Serializable {
 	public void setSesionBean(SesionBean sesionBean) {
 		this.sesionBean = sesionBean;
 	}
-
 	public List<Proyecto> getListaProyectos() {
 		return listaProyectos;
 	}
-
 	public void setListaProyectos(List<Proyecto> listaProyectos) {
 		this.listaProyectos = listaProyectos;
 	}
-
 	public List<Cliente> getListaClientes() {
 		return listaClientes;
 	}
-
 	public void setListaClientes(List<Cliente> listaClientes) {
 		this.listaClientes = listaClientes;
 	}
-
 	public List<Area> getListaAreas() {
 		return listaAreas;
 	}
-
 	public void setListaAreas(List<Area> listaAreas) {
 		this.listaAreas = listaAreas;
 	}
-
 	public Proyecto getProyectoSeleccionado() {
 		return proyectoSeleccionado;
 	}
-
 	public void setProyectoSeleccionado(Proyecto proyectoSeleccionado) {
 		this.proyectoSeleccionado = proyectoSeleccionado;
 		if(proyectoSeleccionado.getArea()!=null){
-//			this.idArea = proyectoSeleccionado.getArea().getId_Area();
 			this.idAreaMod = proyectoSeleccionado.getArea().getId_Area();
 		}
 		if(proyectoSeleccionado.getCliente()!=null){
-//			this.idCliente = proyectoSeleccionado.getCliente().getId_Cliente();
 			this.idClienteMod = proyectoSeleccionado.getCliente().getId_Cliente();
 		}
 	}
-
 	public String getNombre() {
 		return nombre;
 	}
-
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
 	public String getDescripcion() {
 		return descripcion;
 	}
-
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
 	public String getEstado() {
 		return estado;
 	}
-
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
-
-
 	public int getIdArea() {
 		return idArea;
 	}
-
 	public void setIdArea(int idArea) {
 		this.idArea = idArea;
 	}
-
 	public int getIdCliente() {
 		return idCliente;
 	}
-
 	public void setIdCliente(int idCliente) {
 		this.idCliente = idCliente;
 	}
-
 	public String getFiltroNombre() {
 		return filtroNombre;
 	}
-
 	public void setFiltroNombre(String filtroNombre) {
 		this.filtroNombre = filtroNombre;
 	}
@@ -327,5 +463,63 @@ public class ProyectosBean implements Serializable {
 	}
 	public void setIdClienteMod(int idClienteMod) {
 		this.idClienteMod = idClienteMod;
+	}
+	public int getFiltroTipoDoc() {
+		return filtroTipoDoc;
+	}
+	public void setFiltroTipoDoc(int filtroTipoDoc) {
+		this.filtroTipoDoc = filtroTipoDoc;
+	}
+	public String getFiltroNombreDoc() {
+		return filtroNombreDoc;
+	}
+	public void setFiltroNombreDoc(String filtroNombreDoc) {
+		this.filtroNombreDoc = filtroNombreDoc;
+	}
+	public List<TipoDocumento> getListaTipoDocumentos() {
+		return listaTipoDocumentos;
+	}
+	public void setListaTipoDocumentos(List<TipoDocumento> listaTipoDocumentos) {
+		this.listaTipoDocumentos = listaTipoDocumentos;
+	}
+	public List<DocumentoAsociado> getListaDocumentosAsociados() {
+		return listaDocumentosAsociados;
+	}
+	public void setListaDocumentosAsociados(List<DocumentoAsociado> listaDocumentosAsociados) {
+		this.listaDocumentosAsociados = listaDocumentosAsociados;
+	}
+	public DocumentoAsociado getDocumentoSeleccionado() {
+		return documentoSeleccionado;
+	}
+	public void setDocumentoSeleccionado(DocumentoAsociado documentoSeleccionado) {
+		this.documentoSeleccionado = documentoSeleccionado;
+		if(!Util.isEmpty(this.documentoSeleccionado.getNombre_Documento())){
+			this.nombreNuevoDocumento = this.documentoSeleccionado.getNombre_Documento();
+		}
+	}
+
+	public String getNombeArchivoCargado() {
+		return nombeArchivoCargado;
+	}
+	public void setNombeArchivoCargado(String nombeArchivoCargado) {
+		this.nombeArchivoCargado = nombeArchivoCargado;
+	}
+	public byte[] getTempBlob() {
+		return tempBlob;
+	}
+	public void setTempBlob(byte[] tempBlob) {
+		this.tempBlob = tempBlob;
+	}
+	public long getTamanioDocumento() {
+		return tamanioDocumento;
+	}
+	public void setTamanioDocumento(long tamanioDocumento) {
+		this.tamanioDocumento = tamanioDocumento;
+	}
+	public String getNombreNuevoDocumento() {
+		return nombreNuevoDocumento;
+	}
+	public void setNombreNuevoDocumento(String nombreNuevoDocumento) {
+		this.nombreNuevoDocumento = nombreNuevoDocumento;
 	}
 }

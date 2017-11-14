@@ -71,6 +71,10 @@
 							<b:iconAwesome name="pencil" tooltip="Editar proyecto" />
 							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
 						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" action="#{proyectosBean.irAsociarDocumentos}">
+							<b:iconAwesome name="files-o" tooltip="Documentos asociados" />
+							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
+						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>
 			</b:row>

@@ -50,8 +50,13 @@
 							<b:column large-screen="2">
 								<b:commandButton value="Filtrar proyectos" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{proyectosBean.filtrarProyectos()}" update="form:tabla" />
 							</b:column>
-							<b:column largeScreen="2">
+							<b:column largeScreen="1">
 								<b:button ajax="true" value="Nuevo proyecto" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevoProyecto').modal()" />
+							</b:column>
+							<b:column largeScreen="1">
+								<b:commandButton value="+" look="danger" class="btn-danger-blanco" iconAwesome="user-plus" action="#{proyectosBean.irControlProyecto()}" >
+									<f:setPropertyActionListener value="R" target="#{proyectosBean.caracterControl}" />
+								</b:commandButton>
 							</b:column>
 						</b:row>
 					</b:panel>
@@ -74,6 +79,11 @@
 						<p:commandLink ajax="true" styleClass="opciones-tabla" action="#{proyectosBean.irAsociarDocumentos}">
 							<b:iconAwesome name="files-o" tooltip="Documentos asociados" />
 							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" action="#{proyectosBean.irControlProyecto}" >
+							<b:iconAwesome name="grav" tooltip="Editar proyecto" />
+							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
+							<f:setPropertyActionListener value="E" target="#{proyectosBean.caracterControl}" />
 						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>

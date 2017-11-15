@@ -54,6 +54,10 @@ public class Proyecto implements Serializable {
 
 	public Proyecto() {
 	}
+	
+	public Proyecto(int idProyecto) {
+		this.id_Proyecto = idProyecto;
+	}
 
 	public int getId_Proyecto() {
 		return this.id_Proyecto;

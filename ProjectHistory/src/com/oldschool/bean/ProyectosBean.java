@@ -26,6 +26,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.oldschool.ejb.EjbGenericoLocal;
+import com.oldschool.ejb.EjbProyectosLocal;
 import com.oldschool.model.Area;
 import com.oldschool.model.Cliente;
 import com.oldschool.model.DocumentoAsociado;
@@ -42,6 +43,7 @@ public class ProyectosBean implements Serializable {
 	public static final String BEAN_NAME = "proyectosBean";
 	private static final long serialVersionUID = 1461272576618969285L;
 	@EJB private EjbGenericoLocal ejbGenerico;
+	@EJB private EjbProyectosLocal ejbProyectos;
 	
 	/*Variables de sesión*/
 	@ManagedProperty(value = "#{sesionBean}")
@@ -54,11 +56,17 @@ public class ProyectosBean implements Serializable {
 	private Proyecto proyectoSeleccionado;
 	
 	//Formulario de registro
+	private char caracterControl;
 	private String nombre;
 	private String descripcion;
 	private String estado;
 	private int idArea;
 	private int idCliente;
+	
+	private TipoDocumento tipoDocumentalSeleccionado;
+	private TipoDocumento tipoDocAgregar;
+	private List<DocumentoAsociado> listaDocumentosAsocEliminar; //Se eliminara la relacion en BD
+	
 	//Formulario de edicion
 	private int idAreaMod;
 	private int idClienteMod;
@@ -162,6 +170,19 @@ public class ProyectosBean implements Serializable {
 		this.idArea = 0;
 		this.idCliente = 0;
 		this.filtroNombre = null;
+	}
+	
+	public void limpiarProyectosForm(){
+		this.nombre = null;
+		this.descripcion = null;
+		this.estado = null;
+		this.idArea = 0;
+		this.idCliente = 0;
+		this.idAreaMod = 0;
+		this.idClienteMod = 0;
+		this.tipoDocumentalSeleccionado = new TipoDocumento();
+		this.tipoDocAgregar = new TipoDocumento();
+		this.listaDocumentosAsocEliminar = new ArrayList<>();
 	}
 	
 	public void limpiarAsociacionForm(){
@@ -272,6 +293,170 @@ public class ProyectosBean implements Serializable {
 			}
 		} catch (Exception e) {
 			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+			e.printStackTrace();
+		}
+	}
+	
+	/*Formulario registro documentos*/
+	public String irControlProyecto(){
+		try {
+			limpiarProyectosForm();
+			limpiarAsociacionForm();
+			cargarListaTipoDocumentos();
+			//Si es edicion
+			if(this.caracterControl == 'E' && this.proyectoSeleccionado!=null && !Util.isEmpty(this.proyectoSeleccionado.getId_Proyecto())){
+				cargarListaDocumentos(this.proyectoSeleccionado.getId_Proyecto());
+				this.idArea = this.proyectoSeleccionado.getArea().getId_Area();
+				this.idCliente = this.proyectoSeleccionado.getCliente().getId_Cliente();
+			}
+			//Si es creacion
+			else{
+				this.proyectoSeleccionado = new Proyecto();
+				this.proyectoSeleccionado.setUsuario(this.sesionBean.getUsuario());
+				this.proyectoSeleccionado.setFecha_Creacion_Proyecto(new Date());
+			}
+			return "irControlProyectos";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	public void quitarTipoDocumento(){
+		if(this.tipoDocumentalSeleccionado!=null && !Util.isEmpty(this.tipoDocumentalSeleccionado.getId_Tipo_Documento())){
+			for (int i = 0; i < listaDocumentosAsociados.size(); i++) {
+				DocumentoAsociado doc = listaDocumentosAsociados.get(i);
+				if(doc.getTipoDocumento().getId_Tipo_Documento() == this.tipoDocumentalSeleccionado.getId_Tipo_Documento()){
+					//Validar si ya existía antes de la modificación
+					if(doc.getId_Documento_Asociado()!=0){
+						//Debe ir a una lista diferente, pues ya existía y hay que eliminar el registro de BD
+						listaDocumentosAsocEliminar.add(doc);
+					}
+					listaDocumentosAsociados.remove(i);
+					break;
+				}
+			}
+		}
+	}
+
+	public void agregaTipoDocumentoLista(){
+		if(this.tipoDocAgregar!=null && !Util.isEmpty(this.tipoDocAgregar.getId_Tipo_Documento())){
+			
+			//Validar que no haya duplicidad
+			boolean validar = false;
+			for (DocumentoAsociado doc : listaDocumentosAsociados) {
+				if(doc.getTipoDocumento().getId_Tipo_Documento() == this.tipoDocAgregar.getId_Tipo_Documento()){
+					validar = true;
+					break;
+				}
+			}
+			if(!validar){
+				DocumentoAsociado tempDoc = new DocumentoAsociado();
+				tempDoc.setTipoDocumento(this.tipoDocAgregar);
+				listaDocumentosAsociados.add(tempDoc);
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.WARN, "Ya hay un tipo documental igual en la lista.");
+			}
+		}
+	}
+	
+	public void guardarCambiosProyecto(){
+		try {
+
+			//Validar campos vacios
+			boolean validar = false;
+			if(Util.isEmpty(this.proyectoSeleccionado.getNombre_Proyecto()) || Util.isEmpty(this.proyectoSeleccionado.getEstado())){
+				validar = true;
+			}
+			if(Util.isEmpty(this.idArea) || Util.isEmpty(this.idCliente)){
+				validar = true;
+			}
+			
+			if(this.caracterControl == 'E' && this.proyectoSeleccionado!=null && !Util.isEmpty(this.proyectoSeleccionado.getId_Proyecto())){
+				
+				proyectoSeleccionado.setCliente(new Cliente(this.idCliente));
+				proyectoSeleccionado.setArea(new Area(this.idArea));
+				proyectoSeleccionado.setFecha_Creacion_Proyecto(new Date());
+				if(sesionBean.getUsuario() != null){
+					proyectoSeleccionado.setUsuario(sesionBean.getUsuario());						
+				}
+				
+				//Registrar proyecto
+				boolean resActualizacion = ejbGenerico.actualizarObjeto(proyectoSeleccionado);
+				if(resActualizacion){
+					//Eliminar relaciones de documentos asociados
+					if(ejbProyectos.quitarDocumentos(listaDocumentosAsocEliminar)){
+						System.out.println("Se quitaron los documentos asociados al proyecto");
+					}
+					//Agregar los nuevos documentos
+					List<DocumentoAsociado> temp = new ArrayList<>();
+					for (int j = 0; j < listaDocumentosAsociados.size(); j++) {
+						DocumentoAsociado doc = listaDocumentosAsociados.get(j);
+						//Solo se deben agregar los nuevos docuemtnos
+						if(doc.getId_Documento_Asociado()==0){
+							doc.setProyecto(new Proyecto(proyectoSeleccionado.getId_Proyecto()));
+							doc.setUsuario(sesionBean.getUsuario());
+							temp.add(doc);
+						}
+					}
+					boolean resultado = ejbProyectos.asociarDocumentos(temp);
+					if(resultado){
+						Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizó el proyecto correctamente");
+						limpiar();
+						cargarListaProyectos();
+					}else{
+						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error asociando documentos del proyecto, por favor intentelo de nuevo más tarde.");
+					}
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando el proyecto, por favor intentelo de nuevo más tarde.");
+				}
+				
+				
+			}else if(this.caracterControl == 'R'){
+				if(!validar){
+					//Validar si el nombre del proyecto ya existe
+					if(existeProyecto(listaProyectos, this.nombre)){
+						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ya existe un proyecto con ese nombre.");
+					}else{
+						Proyecto proyecto = new Proyecto();
+						proyecto.setNombre_Proyecto(this.proyectoSeleccionado.getNombre_Proyecto());
+						proyecto.setDescripcion(this.proyectoSeleccionado.getDescripcion());
+						proyecto.setEstado(this.proyectoSeleccionado.getEstado());
+						proyecto.setCliente(new Cliente(this.idCliente));
+						proyecto.setArea(new Area(this.idArea));
+						proyecto.setFecha_Creacion_Proyecto(new Date());
+						if(sesionBean.getUsuario() != null){
+							proyecto.setUsuario(sesionBean.getUsuario());						
+						}
+						//Registrar proyecto
+						int id = ejbProyectos.crearProyecto(proyecto);
+						if(id!=0){
+							for (int j = 0; j < listaDocumentosAsociados.size(); j++) {
+								DocumentoAsociado doc = listaDocumentosAsociados.get(j);
+								doc.setProyecto(new Proyecto(id));
+								doc.setUsuario(sesionBean.getUsuario());
+								listaDocumentosAsociados.set(j, doc);
+							}
+							boolean resultado = ejbProyectos.asociarDocumentos(listaDocumentosAsociados);
+							if(resultado){
+								Mensaje.mostrarMensaje(Mensaje.INFO, "Se registró el proyecto correctamente");
+								limpiar();
+								cargarListaProyectos();
+							}else{
+								Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error asociando los documentos, por favor intentelo de nuevo más tarde.");
+							}
+						}else{
+							Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error creando el proyecto, por favor intentelo de nuevo más tarde.");
+						}
+					}
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
+				}
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error, por favor intentelo de nuevo más tarde.");
+			}
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -497,7 +682,12 @@ public class ProyectosBean implements Serializable {
 			this.nombreNuevoDocumento = this.documentoSeleccionado.getNombre_Documento();
 		}
 	}
-
+	public char getCaracterControl() {
+		return caracterControl;
+	}
+	public void setCaracterControl(char caracterControl) {
+		this.caracterControl = caracterControl;
+	}
 	public String getNombeArchivoCargado() {
 		return nombeArchivoCargado;
 	}
@@ -521,5 +711,17 @@ public class ProyectosBean implements Serializable {
 	}
 	public void setNombreNuevoDocumento(String nombreNuevoDocumento) {
 		this.nombreNuevoDocumento = nombreNuevoDocumento;
+	}
+	public TipoDocumento getTipoDocumentalSeleccionado() {
+		return tipoDocumentalSeleccionado;
+	}
+	public void setTipoDocumentalSeleccionado(TipoDocumento tipoDocumentalSeleccionado) {
+		this.tipoDocumentalSeleccionado = tipoDocumentalSeleccionado;
+	}
+	public TipoDocumento getTipoDocAgregar() {
+		return tipoDocAgregar;
+	}
+	public void setTipoDocAgregar(TipoDocumento tipoDocAgregar) {
+		this.tipoDocAgregar = tipoDocAgregar;
 	}
 }

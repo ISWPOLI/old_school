@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="../../templates/defaultLayout.xhtml">
+	<ui:define name="title">
+		<h:outputText value="Control de proyectos" />
+	</ui:define>
+	
+	<!-- Título pantalla -->
+	<ui:define name="titulo">
+		<b:row>
+			<h2>Control de proyectos</h2>
+		</b:row>
+	</ui:define>
+	<!-- Miga de pan -->
+	<ui:define name="breadcrumb">
+		<b:row>
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><h:link outcome="home">Inicio</h:link></li>
+			  <li class="breadcrumb-item"><h:link outcome="control-proyectos">Control de proyectos</h:link></li>
+			  <c:if test="#{proyectosBean.caracterControl == 'E'}">
+				  <li class="breadcrumb-item active">#{proyectosBean.proyectoSeleccionado.nombre_Proyecto}</li>
+			  </c:if>
+			  <c:if test="#{proyectosBean.caracterControl == 'R'}">
+				  <li class="breadcrumb-item active">Nuevo proyecto</li>
+			  </c:if>
+			</ol>
+		</b:row>
+	</ui:define>
+	
+	<!-- Contenido de página -->
+	<ui:define name="content">
+		<h:form id="form" styleClass="form-horizontal" >
+			
+			<b:row>
+				<b:column large-screen="4" >
+					<b:thumbnail styleClass="thumb-actividad">
+						
+						<div class="caption text-center">
+							<div style="width: 89%; margin: 0 auto;">
+								<b:inputText value="#{proyectosBean.proyectoSeleccionado.nombre_Proyecto}" placeholder="Nombre del proyecto" >
+									<f:facet name="prepend"><b:iconAwesome name="suitcase" /></f:facet>
+								</b:inputText>
+							</div>
+							
+							<div class="text-justify collapse in">
+								<p><b:inputText disabled="true" value="#{proyectosBean.proyectoSeleccionado.fecha_Creacion_Proyecto}" label="Fecha modificación" /></p>
+								<p>
+									<b:selectOneMenu value="#{proyectosBean.idCliente}" label="Cliente asociado" >
+										<f:selectItems value="#{proyectosBean.listaClientes}" var="cliente" itemLabel="#{cliente.razon_Social}" itemValue="#{cliente.id_Cliente}" />
+									</b:selectOneMenu>
+								</p>
+								<p>
+									<b:selectOneMenu value="#{proyectosBean.idArea}" label="Area encargada">
+										<f:selectItems value="#{proyectosBean.listaAreas}" var="area" itemLabel="#{area.nombre_Area}" itemValue="#{area.id_Area}" />
+									</b:selectOneMenu>
+								</p>
+								<p>
+									<b:inputText disabled="true" value="#{proyectosBean.proyectoSeleccionado.usuario.nombreCompleto}" label="Usuario creador" />
+								</p>
+								<p>
+									<b:selectOneMenu value="#{proyectosBean.proyectoSeleccionado.estado}" label="Estado del proyecto">
+										<f:selectItem itemValue="Pre-venta" itemLabel="Pre-venta" />
+										<f:selectItem itemValue="Inicio" itemLabel="Inicio" />
+										<f:selectItem itemValue="Desarrollo" itemLabel="Desarrollo" />
+										<f:selectItem itemValue="Pruebas" itemLabel="Pruebas" />
+										<f:selectItem itemValue="Cerrado" itemLabel="Cerrado" />
+										<f:selectItem itemValue="Garantia" itemLabel="Garantia" />
+									</b:selectOneMenu>
+								</p>
+								<p><b:inputTextarea label="Descripcion" placeholder="Descripcion del proyecto" value="#{proyectosBean.proyectoSeleccionado.descripcion}" maxlength="200" /></p>
+							</div>
+						</div>
+					</b:thumbnail>
+				</b:column>
+				
+				<b:column large-screen="8">
+					<b:row>
+						<b:column>
+							<b:panel collapsible="false" styleClass="panel-negro" >
+								<f:facet name="heading">
+									<i class="fa fa-filter" style="padding-right: 10px" />
+									<h:outputText value="Filtro de proyectos" />
+								</f:facet>
+								<b:row>
+									<b:column large-screen="7">
+										<b:selectOneMenu value="#{proyectosBean.tipoDocAgregar}">
+											<f:selectItems value="#{proyectosBean.listaTipoDocumentos}" var="tipoDoc" itemLabel="#{tipoDoc.nombre_Tipo_Documento}" itemValue="#{tipoDoc}" />
+										</b:selectOneMenu>
+									</b:column>
+									<b:column large-screen="5">
+										<b:commandButton value="Agregar tipo de documento" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{proyectosBean.agregaTipoDocumentoLista()}" update="form:tabla" />
+									</b:column>
+								</b:row>
+							</b:panel>
+						</b:column>
+					</b:row>
+					
+					<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
+						<b:dataTable id="tabla" value="#{proyectosBean.listaDocumentosAsociados}" styleClass="no-length-menu" var="documento" lang="es" border="false" searching="false" pageLength="10">
+							<b:dataTableColumn label="Nombre tipo documento" value="#{documento.tipoDocumento.nombre_Tipo_Documento}" order="asc" />
+							<b:dataTableColumn label="Fecha mod Plantilla" value="#{documento.tipoDocumento.fecha_modificacion}" />
+							
+							<b:dataTableColumn label="Opciones">
+								<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalQuitar').modal()" update="form:modalQuitar" >
+									<b:iconAwesome name="trash" tooltip="Quitar tipo documental" />
+									<f:setPropertyActionListener value="#{documento.tipoDocumento}" target="#{proyectosBean.tipoDocumentalSeleccionado}" />
+								</p:commandLink>
+							</b:dataTableColumn>
+						</b:dataTable>
+					</b:row>
+				</b:column>
+			</b:row>
+			
+			<b:row>
+				<b:column offset-lg="4" large-screen="4">
+					<b:commandButton value="Guardar cambios" look="primary" class="btn-primary-blanco" icon-awesome="floppy-o" action="#{proyectosBean.guardarCambiosProyecto}" />
+				</b:column>
+			</b:row>
+			
+			<!-- MODAL ELIMINAR/INACTIVAR -->
+			<b:modal id="modalQuitar" title="Quitar tipo documental del proyecto" styleClass="modalQuitar" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>¿Está seguro que desea quitar el tipo de documento <b>#{proyectosBean.tipoDocumentalSeleccionado.nombre_Tipo_Documento}</b> del proyecto, al hacer esto no se podrán cargar documentos de este tipo al proyecto</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Quitar tipo documental" look="warning" styleClass="btn-warning-blanco" icon-awesome="hand-o-down" action="#{proyectosBean.quitarTipoDocumento()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

@@ -43,11 +43,6 @@
 			<redirect />
 		</navigation-case>
 		<navigation-case>
-			<from-outcome>irAsociarDocumentos</from-outcome>
-			<to-view-id>/pages/Proyecto/asociarDocumentos.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
 			<from-outcome>reporte-plantillas</from-outcome>
 			<to-view-id>/pages/Reportes/reportePlantillas.xhtml</to-view-id>
 			<redirect />
@@ -59,6 +54,20 @@
 		<navigation-case>
 			<from-outcome>home-page</from-outcome>
 			<to-view-id>/pages/home.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<from-view-id>/pages/Proyecto/controlProyectos.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>irControlProyectos</from-outcome>
+			<to-view-id>/pages/Proyecto/editarProyecto.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>irAsociarDocumentos</from-outcome>
+			<to-view-id>/pages/Proyecto/asociarDocumentos.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
 	</navigation-rule>

@@ -13,8 +13,8 @@ import java.util.Date;
 @Table(name="documento_asociado")
 @NamedQueries({
 	@NamedQuery(name="DocumentoAsociado.findAll", query="SELECT d FROM DocumentoAsociado d"),
-	@NamedQuery(name="DocumentoAsociado.findByProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :id_Proyecto")
-	
+	@NamedQuery(name="DocumentoAsociado.findByProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :id_Proyecto"),
+	@NamedQuery(name="DocumentoAsociado.deleteById", query="DELETE FROM DocumentoAsociado d WHERE d.id_Documento_Asociado = :id_Documento_Asociado")
 })
 public class DocumentoAsociado implements Serializable {
 	private static final long serialVersionUID = 1L;

@@ -14,7 +14,8 @@ import java.util.Date;
 @NamedQueries({
 	@NamedQuery(name="DocumentoAsociado.findAll", query="SELECT d FROM DocumentoAsociado d"),
 	@NamedQuery(name="DocumentoAsociado.findByProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :id_Proyecto"),
-	@NamedQuery(name="DocumentoAsociado.deleteById", query="DELETE FROM DocumentoAsociado d WHERE d.id_Documento_Asociado = :id_Documento_Asociado")
+	@NamedQuery(name="DocumentoAsociado.eliminarPorId", query="DELETE FROM DocumentoAsociado d WHERE d.id_Documento_Asociado = :ID"),
+	@NamedQuery(name="DocumentoAsociado.findByTipoDocumento", query="SELECT d FROM DocumentoAsociado d WHERE d.tipoDocumento.id_Tipo_Documento = :id_Tipo_Documento"),
 })
 public class DocumentoAsociado implements Serializable {
 	private static final long serialVersionUID = 1L;

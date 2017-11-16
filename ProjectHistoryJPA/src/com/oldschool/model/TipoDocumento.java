@@ -24,7 +24,8 @@ import javax.persistence.Table;
 @Table(name="tipo_documento")
 @NamedQueries({
 	@NamedQuery(name="TipoDocumento.findAll", query="SELECT t FROM TipoDocumento t"),
-	@NamedQuery(name="TipoDocumento.findByNombre", query="SELECT t FROM TipoDocumento t WHERE LOWER(t.nombre_Tipo_Documento) LIKE :nombre_Tipo_Documento")
+	@NamedQuery(name="TipoDocumento.findByNombre", query="SELECT t FROM TipoDocumento t WHERE LOWER(t.nombre_Tipo_Documento) LIKE :nombre_Tipo_Documento"),
+	@NamedQuery(name="TipoDocumento.eliminarPorId", query="DELETE FROM TipoDocumento t WHERE t.id_Tipo_Documento = :ID")
 })
 public class TipoDocumento implements Serializable {
 	private static final long serialVersionUID = 1L;

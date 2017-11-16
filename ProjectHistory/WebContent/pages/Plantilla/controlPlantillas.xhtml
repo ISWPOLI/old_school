@@ -66,14 +66,18 @@
 					<b:dataTableColumn label="Ult. Modificación" value="#{plantilla.fecha_modificacion}" />
 					<b:dataTableColumn label="Tamaño" value="#{plantilla.tamanio_documento} KB" />
 					<b:dataTableColumn label="Opciones">
+						<p:commandLink ajax="false" styleClass="opciones-tabla" rendered="#{plantilla.tamanio_documento gt 0}" >
+							<b:iconAwesome name="download" tooltip="Descargar plantilla" />
+							<f:setPropertyActionListener value="#{plantilla}" target="#{plantillasBean.plantillaSeleccionada}" />
+							<p:fileDownload value="#{plantillasBean.descargarPlantilla()}" />
+						</p:commandLink>
 						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarPlantilla').modal()" update="form:modalEditarPlantilla" >
 							<b:iconAwesome name="pencil" tooltip="Editar plantilla" />
 							<f:setPropertyActionListener value="#{plantilla}" target="#{plantillasBean.plantillaSeleccionada}" />
 						</p:commandLink>
-						<p:commandLink ajax="false" styleClass="opciones-tabla">
-							<b:iconAwesome name="download" tooltip="Descargar plantilla" />
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEliminarPlantilla').modal()" update="form:modalEliminarPlantilla" >
+							<b:iconAwesome name="trash" tooltip="Eliminar plantilla" />
 							<f:setPropertyActionListener value="#{plantilla}" target="#{plantillasBean.plantillaSeleccionada}" />
-							<p:fileDownload value="#{plantillasBean.descargarPlantilla()}" />
 						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>
@@ -147,6 +151,28 @@
 						</b:column>
 						<b:column largeScreen="6">
 							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{plantillasBean.editarPlantilla()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL ELIMINAR -->
+			<b:modal id="modalEliminarPlantilla" title="Eliminar Plantilla" styleClass="modalEliminarPlantilla" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p><b>Tenga en cuenta que unicamente podrá eliminar plantillas que no esten siendo usadas en un proyecto</b></p>
+							<p>¿Está seguro que desea eliminar la plantilla <b>#{plantillasBean.plantillaSeleccionada.nombre_Tipo_Documento}</b>?</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Eliminar plantilla" look="warning" styleClass="btn-warning-blanco" icon-awesome="hand-o-down" action="#{plantillasBean.eliminarPlantilla()}" dismiss="modal" />
 						</b:column>
 					</b:row>
 			    </f:facet>

@@ -26,6 +26,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.oldschool.ejb.EjbGenericoLocal;
+import com.oldschool.model.DocumentoAsociado;
 import com.oldschool.model.TipoDocumento;
 import com.oldschool.util.Mensaje;
 import com.oldschool.util.Util;
@@ -172,30 +173,28 @@ public class PlantillasBean implements Serializable {
 			e.printStackTrace();
 		}
 	}
-//	
+
 	public void editarPlantilla(){
 		
 		try {
 			//Validar campos vacios
 			boolean validar = false;
-			if(this.plantillaSeleccionada==null){
-				validar = true;
-			}if(Util.isEmpty(this.plantillaSeleccionada.getNombre_Tipo_Documento())){
-				validar = true;
-			}if(this.tempBlob==null){
+			if(this.plantillaSeleccionada==null && Util.isEmpty(this.plantillaSeleccionada.getNombre_Tipo_Documento())){
 				validar = true;
 			}
 			//Validar si el nombre de usuario ya existe
 			if(!validar){
-				//Obtener extension de documentol
-				String[] nombreDoc = nombeArchivoCargado.split("\\.");
-				String extension = nombreDoc.length > 0 ? nombreDoc[nombreDoc.length-1] : "txt";
-				//Sobre cargar el objeto antes de guardarlo
-//				TipoDocumento plantilla = new TipoDocumento();
-				plantillaSeleccionada.setPlantilla(this.tempBlob);
-				plantillaSeleccionada.setTipo_archivo(extension);
+				//Validar si se adjuntó un documento
+				if(this.tempBlob!=null && this.tempBlob.length>0){
+					//Obtener extension de documento
+					String[] nombreDoc = nombeArchivoCargado.split("\\.");
+					String extension = nombreDoc.length > 0 ? nombreDoc[nombreDoc.length-1] : "txt";
+					//Sobre cargar el objeto antes de guardarlo
+					plantillaSeleccionada.setPlantilla(this.tempBlob);
+					plantillaSeleccionada.setTipo_archivo(extension);
+					plantillaSeleccionada.setTamanio_documento(tamanioDocumento);
+				}
 				plantillaSeleccionada.setFecha_modificacion(new Date());
-				plantillaSeleccionada.setTamanio_documento(tamanioDocumento);
 				//Registrar plantilla
 				boolean resultado = ejbGenerico.actualizarObjeto(plantillaSeleccionada);
 				if(resultado){
@@ -209,40 +208,10 @@ public class PlantillasBean implements Serializable {
 				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
 			}
 			
-			
 		} catch (Exception e) {
 			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
 			e.printStackTrace();
 		}
-	
-		
-		
-		
-//		try {
-//			//Validar campos vacios
-//			boolean validar = false;
-//			if(this.areaSeleccionada!=null){
-//				if(Util.isEmpty(this.areaSeleccionada.getNombre_Area())){
-//					validar = true;
-//				}
-//			}
-//			//Actualizar
-//			if(!validar){
-//				boolean result = ejbGenerico.actualizarObjeto(this.areaSeleccionada);
-//				if(result){
-//					Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizaron los datos del area exitosamente.");
-//					limpiar();
-//					cargarListaAreas();
-//				}else{
-//					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando los datos del area, por favor intentelo de nuevo más tarde.");
-//				}
-//			}else{
-//				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
-//			}
-//		} catch (Exception e) {
-//			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
-//			e.printStackTrace();
-//		}
 	}
 	
 	@SuppressWarnings("resource")
@@ -276,6 +245,43 @@ public class PlantillasBean implements Serializable {
 		return download;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void eliminarPlantilla(){
+		try {
+			//Validar campos vacios
+			if(this.plantillaSeleccionada!=null && !Util.isEmpty(this.plantillaSeleccionada.getId_Tipo_Documento())){
+				//Revisar si el área tiene relacion con proyectos
+				Map<String, Object> parametros = new HashMap<>();
+				parametros.put("id_Tipo_Documento", this.plantillaSeleccionada.getId_Tipo_Documento());
+				List<DocumentoAsociado> listaDocsAsociados = null;
+				listaDocsAsociados = (List<DocumentoAsociado>)(List<?>)ejbGenerico.listarPorQuery(new DocumentoAsociado(), "findByTipoDocumento", parametros);
+				
+				//Si no hay resultados de la consulta se puede eliminar
+				if(listaDocsAsociados==null || listaDocsAsociados.isEmpty()){
+					//Puede eliminar
+					boolean result = ejbGenerico.eliminarObjectoPorQuery(plantillaSeleccionada, plantillaSeleccionada.getId_Tipo_Documento());
+					if(result){
+						Mensaje.mostrarMensaje(Mensaje.INFO, "Se eliminó la plantilla exitosamente.");
+					}else{
+						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error eliminando la plantilla, por favor intentelo de nuevo más tarde.");
+					}
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.WARN, "Esta plantilla ya está asociada a proyectos activos, no se puede borrar.");
+				}
+				
+				//Limpiar y cargar lista
+				limpiar();
+				cargarListaPlantillas();
+				
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
+			}
+		} catch (Exception e) {
+			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+			e.printStackTrace();
+		}
+	}
+	
 	/*Get & Set*/
 	public SesionBean getSesionBean() {
 		return sesionBean;
@@ -301,12 +307,6 @@ public class PlantillasBean implements Serializable {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-//	public UploadedFile getPlantilla() {
-//		return plantilla;
-//	}
-//	public void setPlantilla(UploadedFile plantilla) {
-//		this.plantilla = plantilla;
-//	}
 	public String getFiltroNombre() {
 		return filtroNombre;
 	}

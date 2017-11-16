@@ -44,8 +44,8 @@ public class EjbProyectos implements EjbProyectosLocal {
 	public boolean quitarDocumentos(List<DocumentoAsociado> lista) throws Exception {
 		int cont = 0;
 		for (DocumentoAsociado doc : lista) {
-			Query query = em.createNamedQuery("DocumentoAsociado.deleteById");
-			query.setParameter("id_Documento_Asociado", doc.getId_Documento_Asociado());
+			Query query = em.createNamedQuery("DocumentoAsociado.eliminarPorId");
+			query.setParameter("ID", doc.getId_Documento_Asociado());
 			if(query.executeUpdate()>0){
 				cont++;
 			}

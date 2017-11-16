@@ -14,7 +14,8 @@ import java.util.List;
 @Table(name="proyecto")
 @NamedQueries({
 	@NamedQuery(name="Proyecto.findAll", query="SELECT p FROM Proyecto p"),
-	@NamedQuery(name="Proyecto.findByNombre", query="SELECT p FROM Proyecto p WHERE LOWER(p.nombre_Proyecto) LIKE :nombre_Proyecto")
+	@NamedQuery(name="Proyecto.findByNombre", query="SELECT p FROM Proyecto p WHERE LOWER(p.nombre_Proyecto) LIKE :nombre_Proyecto"),
+	@NamedQuery(name="Proyecto.findByIdArea", query="SELECT p FROM Proyecto p WHERE p.area.id_Area = :area"),
 	
 })
 public class Proyecto implements Serializable {

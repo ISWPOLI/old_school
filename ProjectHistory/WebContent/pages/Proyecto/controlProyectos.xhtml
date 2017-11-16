@@ -50,11 +50,8 @@
 							<b:column large-screen="2">
 								<b:commandButton value="Filtrar proyectos" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{proyectosBean.filtrarProyectos()}" update="form:tabla" />
 							</b:column>
-							<b:column largeScreen="1">
-								<b:button ajax="true" value="Nuevo proyecto" look="success" class="btn-success-blanco" iconAwesome="user-plus" onclick="$('.modalNuevoProyecto').modal()" />
-							</b:column>
-							<b:column largeScreen="1">
-								<b:commandButton value="+" look="danger" class="btn-danger-blanco" iconAwesome="user-plus" action="#{proyectosBean.irControlProyecto()}" >
+							<b:column largeScreen="2">
+								<b:commandButton value="Nuevo proyecto" look="success" class="btn-success-blanco" iconAwesome="user-plus" action="#{proyectosBean.irControlProyecto()}" >
 									<f:setPropertyActionListener value="R" target="#{proyectosBean.caracterControl}" />
 								</b:commandButton>
 							</b:column>
@@ -72,138 +69,18 @@
 					<b:dataTableColumn label="Estado" value="#{proyecto.estado}" />
 					
 					<b:dataTableColumn label="Opciones">
-						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarProyecto').modal()" update="form:modalEditarProyecto" >
-							<b:iconAwesome name="pencil" tooltip="Editar proyecto" />
-							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
-						</p:commandLink>
 						<p:commandLink ajax="true" styleClass="opciones-tabla" action="#{proyectosBean.irAsociarDocumentos}">
 							<b:iconAwesome name="files-o" tooltip="Documentos asociados" />
 							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
 						</p:commandLink>
 						<p:commandLink ajax="true" styleClass="opciones-tabla" action="#{proyectosBean.irControlProyecto}" >
-							<b:iconAwesome name="grav" tooltip="Editar proyecto" />
+							<b:iconAwesome name="pencil" tooltip="Editar proyecto" />
 							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
 							<f:setPropertyActionListener value="E" target="#{proyectosBean.caracterControl}" />
 						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>
 			</b:row>
-			
-			<!-- MODAL AGREGAR -->
-			<b:modal id="modalNuevoProyecto" title="Nuevo proyecto" styleClass="modalNuevoProyecto" >
-				<b:row>
-					<b:column large-screen="10" offset="1">
-						<b:row>
-							<b:column large-screen="4"><label>Nombre del proyecto (*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:inputText placeholder="Nombre del proyecto" value="#{proyectosBean.nombre}" maxlength="40" />
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="4"><label>Cliente asociado(*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:selectOneMenu value="#{proyectosBean.idCliente}" >
-									<f:selectItems value="#{proyectosBean.listaClientes}" var="cliente" itemLabel="#{cliente.razon_Social}" itemValue="#{cliente.id_Cliente}" />
-								</b:selectOneMenu>
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="4"><label>Area encargada(*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:selectOneMenu value="#{proyectosBean.idArea}">
-									<f:selectItems value="#{proyectosBean.listaAreas}" var="area" itemLabel="#{area.nombre_Area}" itemValue="#{area.id_Area}" />
-								</b:selectOneMenu>
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="4"><label>Estado del proyecto(*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:selectOneMenu value="#{proyectosBean.estado}">
-									<f:selectItem itemValue="Pre-venta" itemLabel="Pre-venta" />
-									<f:selectItem itemValue="Inicio" itemLabel="Inicio" />
-									<f:selectItem itemValue="Desarrollo" itemLabel="Desarrollo" />
-									<f:selectItem itemValue="Pruebas" itemLabel="Pruebas" />
-									<f:selectItem itemValue="Cerrado" itemLabel="Cerrado" />
-									<f:selectItem itemValue="Garantia" itemLabel="Garantia" />
-								</b:selectOneMenu>
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="12" styleClass="form-group">
-								<b:inputTextarea label="Descripcion" placeholder="Descripcion del proyecto" value="#{proyectosBean.descripcion}" maxlength="200" />
-							</b:column>
-						</b:row>
-		 			</b:column>
-	 			</b:row>
-			    <f:facet name="footer">
-					<b:row>
-						<b:column largeScreen="6">
-							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
-						</b:column>
-						<b:column largeScreen="6">
-							<b:commandButton value="Agregar" look="success" styleClass="btn-success-blanco" icon-awesome="user-plus" action="#{proyectosBean.crearProyecto()}" dismiss="modal" />
-						</b:column>
-					</b:row>
-			    </f:facet>
-			</b:modal>
-			
-			<!-- MODAL EDITAR -->
-			<b:modal id="modalEditarProyecto" title="Editar datos proyecto" styleClass="modalEditarProyecto" >
-				<b:row>
-					<b:column large-screen="10" offset="1">
-						<b:row>
-							<b:column large-screen="4"><label>Nombre del proyecto (*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:inputText placeholder="Nombre del proyecto" value="#{proyectosBean.proyectoSeleccionado.nombre_Proyecto}" maxlength="40" />
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="4"><label>Cliente asociado(*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:selectOneMenu value="#{proyectosBean.idClienteMod}" >
-									<f:selectItems value="#{proyectosBean.listaClientes}" var="cliente" itemLabel="#{cliente.razon_Social}" itemValue="#{cliente.id_Cliente}" />
-								</b:selectOneMenu>
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="4"><label>Area encargada(*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:selectOneMenu value="#{proyectosBean.idAreaMod}">
-									<f:selectItems value="#{proyectosBean.listaAreas}" var="area" itemLabel="#{area.nombre_Area}" itemValue="#{area.id_Area}" />
-								</b:selectOneMenu>
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="4"><label>Estado del proyecto(*)</label></b:column>
-							<b:column large-screen="8" styleClass="form-group">
-								<b:selectOneMenu value="#{proyectosBean.proyectoSeleccionado.estado}">
-									<f:selectItem itemValue="Pre-venta" itemLabel="Pre-venta" />
-									<f:selectItem itemValue="Inicio" itemLabel="Inicio" />
-									<f:selectItem itemValue="Desarrollo" itemLabel="Desarrollo" />
-									<f:selectItem itemValue="Pruebas" itemLabel="Pruebas" />
-									<f:selectItem itemValue="Cerrado" itemLabel="Cerrado" />
-									<f:selectItem itemValue="Garantia" itemLabel="Garantia" />
-								</b:selectOneMenu>
-							</b:column>
-						</b:row>
-						<b:row>
-							<b:column large-screen="12" styleClass="form-group">
-								<b:inputTextarea label="Descripcion (*)" placeholder="Descripcion del proyecto" value="#{proyectosBean.proyectoSeleccionado.descripcion}" maxlength="200" />
-							</b:column>
-						</b:row>
-		 			</b:column>
-	 			</b:row>
-			    <f:facet name="footer">
-					<b:row>
-						<b:column largeScreen="6">
-							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
-						</b:column>
-						<b:column largeScreen="6">
-							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{proyectosBean.editarProyecto()}" dismiss="modal" />
-						</b:column>
-					</b:row>
-			    </f:facet>
-			</b:modal>
 			
 			<script>
 				$(document).ready( ocultarPrimeraFilaTabla() );

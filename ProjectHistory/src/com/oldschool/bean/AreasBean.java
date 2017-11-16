@@ -14,6 +14,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.oldschool.ejb.EjbGenericoLocal;
 import com.oldschool.model.Area;
+import com.oldschool.model.Proyecto;
 import com.oldschool.util.Mensaje;
 import com.oldschool.util.Util;
 
@@ -143,6 +144,43 @@ public class AreasBean implements Serializable {
 				}else{
 					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando los datos del area, por favor intentelo de nuevo más tarde.");
 				}
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
+			}
+		} catch (Exception e) {
+			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void eliminarArea(){
+		try {
+			//Validar campos vacios
+			if(this.areaSeleccionada!=null && !Util.isEmpty(this.areaSeleccionada.getId_Area())){
+				//Revisar si el área tiene relacion con proyectos
+				Map<String, Object> parametros = new HashMap<>();
+				parametros.put("area", this.areaSeleccionada.getId_Area());
+				List<Proyecto> listaProyectos = null;
+				listaProyectos = (List<Proyecto>)(List<?>)ejbGenerico.listarPorQuery(new Proyecto(), "findByIdArea", parametros);
+				
+				//Si no hay resultados de la consulta se puede eliminar
+				if(listaProyectos==null || listaProyectos.isEmpty()){
+					//Puede eliminar
+					boolean result = ejbGenerico.eliminarObjectoPorQuery(areaSeleccionada, areaSeleccionada.getId_Area());
+					if(result){
+						Mensaje.mostrarMensaje(Mensaje.INFO, "Se eliminó el area exitosamente.");
+					}else{
+						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error eliminando el area, por favor intentelo de nuevo más tarde.");
+					}
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.WARN, "Esta área ya está asociada a proyectos activos, no se puede borrar.");
+				}
+				
+				//Limpiar y cargar lista
+				limpiar();
+				cargarListaAreas();
+				
 			}else{
 				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
 			}

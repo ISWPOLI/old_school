@@ -41,17 +41,11 @@
 							<h:outputText value="Filtro de areas" />
 						</f:facet>
 						<b:row>
-							<b:column large-screen="3">
+							<b:column large-screen="4">
 								<h:outputLabel value="Digite el nombre del área que desea filtrar" />
 							</b:column>
-							<b:column large-screen="3">
+							<b:column large-screen="4">
 								<b:inputText placeholder="Ej: IBM Portal" value="#{areasBean.filtroNombre}" maxlength="30" />
-							</b:column>
-							<b:column large-screen="2">
-								<b:selectOneMenu>
-									<f:selectItem itemValue="A" itemLabel="Activo" />
-									<f:selectItem itemValue="I" itemLabel="Inactivo" />
-								</b:selectOneMenu>
 							</b:column>
 							<b:column large-screen="2">
 								<b:commandButton value="Filtrar Areas" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{areasBean.filtrarArea()}" update="form:tabla" />
@@ -73,6 +67,10 @@
 					<b:dataTableColumn label="Opciones">
 						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarArea').modal()" update="form:modalEditarArea" >
 							<b:iconAwesome name="pencil" tooltip="Editar area" />
+							<f:setPropertyActionListener value="#{area}" target="#{areasBean.areaSeleccionada}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEliminarArea').modal()" update="form:modalEliminarArea" >
+							<b:iconAwesome name="trash" tooltip="Eliminar area" />
 							<f:setPropertyActionListener value="#{area}" target="#{areasBean.areaSeleccionada}" />
 						</p:commandLink>
 					</b:dataTableColumn>
@@ -122,6 +120,28 @@
 						</b:column>
 						<b:column largeScreen="6">
 							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{areasBean.editarArea()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL ELIMINAR -->
+			<b:modal id="modalEliminarArea" title="Eliminar Area" styleClass="modalEliminarArea" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p><b>Tenga en cuenta que unicamente podrá eliminar áreas que no esten relacionadas al proyecto</b></p>
+							<p>¿Está seguro que desea eliminar el área <b>#{areasBean.areaSeleccionada.nombre_Area}</b>?</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Eliminar área" look="warning" styleClass="btn-warning-blanco" icon-awesome="hand-o-down" action="#{areasBean.eliminarArea()}" dismiss="modal" />
 						</b:column>
 					</b:row>
 			    </f:facet>

@@ -57,20 +57,13 @@ public class ProyectosBean implements Serializable {
 	
 	//Formulario de registro
 	private char caracterControl;
-	private String nombre;
-	private String descripcion;
-	private String estado;
 	private int idArea;
 	private int idCliente;
-	
 	private TipoDocumento tipoDocumentalSeleccionado;
 	private TipoDocumento tipoDocAgregar;
 	private List<DocumentoAsociado> listaDocumentosAsocEliminar; //Se eliminara la relacion en BD
 	
 	//Formulario de edicion
-	private int idAreaMod;
-	private int idClienteMod;
-	//Formulario de asociacion
 	private List<TipoDocumento> listaTipoDocumentos;
 	private List<DocumentoAsociado> listaDocumentosAsociados;
 	private DocumentoAsociado documentoSeleccionado;
@@ -152,6 +145,102 @@ public class ProyectosBean implements Serializable {
 		return null;
 	}
 	
+	private boolean editarProyecto(){
+		try {
+			proyectoSeleccionado.setCliente(new Cliente(this.idCliente));
+			proyectoSeleccionado.setArea(new Area(this.idArea));
+			proyectoSeleccionado.setFecha_Creacion_Proyecto(new Date());
+			if(sesionBean.getUsuario() != null){
+				proyectoSeleccionado.setUsuario(sesionBean.getUsuario());						
+			}
+			
+			//Registrar proyecto
+			boolean resActualizacion = ejbGenerico.actualizarObjeto(proyectoSeleccionado);
+			if(resActualizacion){
+				//Eliminar relaciones de documentos asociados
+				if(ejbProyectos.quitarDocumentos(listaDocumentosAsocEliminar)){
+					System.out.println("Se quitaron los documentos asociados al proyecto");
+				}
+				//Agregar los nuevos documentos
+				List<DocumentoAsociado> temp = new ArrayList<>();
+				for (int j = 0; j < listaDocumentosAsociados.size(); j++) {
+					DocumentoAsociado doc = listaDocumentosAsociados.get(j);
+					//Solo se deben agregar los nuevos docuemtnos
+					if(doc.getId_Documento_Asociado()==0){
+						doc.setProyecto(new Proyecto(proyectoSeleccionado.getId_Proyecto()));
+						doc.setUsuario(sesionBean.getUsuario());
+						temp.add(doc);
+					}
+				}
+				boolean resultado = ejbProyectos.asociarDocumentos(temp);
+				if(resultado){
+					Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizó el proyecto correctamente");
+					limpiar();
+					cargarListaProyectos();
+					
+					return true;
+					
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error asociando documentos del proyecto, por favor intentelo de nuevo más tarde.");
+				}
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando el proyecto, por favor intentelo de nuevo más tarde.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
+	private boolean registrarProyecto(){
+		try {
+			//Validar si el nombre del proyecto ya existe
+			if(existeProyecto(listaProyectos, proyectoSeleccionado.getNombre_Proyecto())){
+				Mensaje.mostrarMensaje(Mensaje.ERROR, "Ya existe un proyecto con ese nombre.");
+			}else{
+				Proyecto proyecto = new Proyecto();
+				proyecto.setNombre_Proyecto(this.proyectoSeleccionado.getNombre_Proyecto());
+				proyecto.setDescripcion(this.proyectoSeleccionado.getDescripcion());
+				proyecto.setEstado(this.proyectoSeleccionado.getEstado());
+				proyecto.setCliente(new Cliente(this.idCliente));
+				proyecto.setArea(new Area(this.idArea));
+				proyecto.setFecha_Creacion_Proyecto(new Date());
+				if(sesionBean.getUsuario() != null){
+					proyecto.setUsuario(sesionBean.getUsuario());						
+				}
+				//Registrar proyecto
+				int id = ejbProyectos.crearProyecto(proyecto);
+				if(id!=0){
+					for (int j = 0; j < listaDocumentosAsociados.size(); j++) {
+						DocumentoAsociado doc = listaDocumentosAsociados.get(j);
+						doc.setProyecto(new Proyecto(id));
+						doc.setUsuario(sesionBean.getUsuario());
+						listaDocumentosAsociados.set(j, doc);
+					}
+					boolean resultado = ejbProyectos.asociarDocumentos(listaDocumentosAsociados);
+					if(resultado){
+						Mensaje.mostrarMensaje(Mensaje.INFO, "Se registró el proyecto correctamente");
+						limpiar();
+						cargarListaProyectos();
+						
+						return true;
+						
+					}else{
+						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error asociando los documentos, por favor intentelo de nuevo más tarde.");
+					}
+				}else{
+					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error creando el proyecto, por favor intentelo de nuevo más tarde.");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}
+	
 	/*Métodos públicos*/
 	@PostConstruct
 	public void init(){
@@ -164,22 +253,14 @@ public class ProyectosBean implements Serializable {
 	public void limpiar(){
 		this.listaProyectos = new ArrayList<>();
 		this.proyectoSeleccionado = new Proyecto(); 
-		this.nombre = null;
-		this.descripcion = null;
-		this.estado = null;
 		this.idArea = 0;
 		this.idCliente = 0;
 		this.filtroNombre = null;
 	}
 	
 	public void limpiarProyectosForm(){
-		this.nombre = null;
-		this.descripcion = null;
-		this.estado = null;
 		this.idArea = 0;
 		this.idCliente = 0;
-		this.idAreaMod = 0;
-		this.idClienteMod = 0;
 		this.tipoDocumentalSeleccionado = new TipoDocumento();
 		this.tipoDocAgregar = new TipoDocumento();
 		this.listaDocumentosAsocEliminar = new ArrayList<>();
@@ -188,58 +269,13 @@ public class ProyectosBean implements Serializable {
 	public void limpiarAsociacionForm(){
 		this.documentoSeleccionado = null;
 		this.nombeArchivoCargado = null;
+		this.nombreNuevoDocumento = null;
 		this.tempBlob = null;
 		this.tamanioDocumento = 0;
 		this.filtroTipoDoc = 0;
 		this.filtroNombreDoc = null;
 		this.listaDocumentosAsociados = new ArrayList<>();
 		this.listaTipoDocumentos = new ArrayList<>();
-	}
-	
-	public void crearProyecto(){
-		try {
-			//Validar campos vacios
-			boolean validar = false;
-			if(Util.isEmpty(this.nombre) || Util.isEmpty(this.descripcion) || Util.isEmpty(this.estado)){
-				validar = true;
-			}
-			if(Util.isEmpty(this.idArea) || Util.isEmpty(this.idCliente)){
-				validar = true;
-			}
-			if(!validar){
-				//Validar si el nombre del proyecto ya existe
-				if(existeProyecto(listaProyectos, this.nombre)){
-					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ya existe un proyecto con ese nombre.");
-				}else{
-					Proyecto proyecto = new Proyecto();
-					proyecto.setNombre_Proyecto(this.nombre);
-					proyecto.setDescripcion(this.descripcion);
-					proyecto.setEstado(this.estado);
-					proyecto.setCliente(new Cliente(this.idCliente));
-					proyecto.setArea(new Area(this.idArea));
-					proyecto.setFecha_Creacion_Proyecto(new Date());
-					if(sesionBean.getUsuario() != null){
-						proyecto.setUsuario(sesionBean.getUsuario());						
-					}
-					//Registrar proyecto
-					boolean resultado = ejbGenerico.agregarObjeto(proyecto);
-					if(resultado){
-						Mensaje.mostrarMensaje(Mensaje.INFO, "Se registró el proyecto correctamente");
-						limpiar();
-						cargarListaProyectos();
-					}else{
-						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error creando el proyecto, por favor intentelo de nuevo más tarde.");
-					}
-				}
-			}else{
-				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
-			}
-			
-			
-		} catch (Exception e) {
-			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
-			e.printStackTrace();
-		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -255,44 +291,6 @@ public class ProyectosBean implements Serializable {
 				cargarListaProyectos();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void editarProyecto(){
-		try {
-			//Validar campos vacios
-			boolean validar = false;
-			if(this.proyectoSeleccionado!=null){
-				if(Util.isEmpty(this.proyectoSeleccionado.getNombre_Proyecto())
-						|| Util.isEmpty(this.proyectoSeleccionado.getDescripcion())
-						|| Util.isEmpty(this.proyectoSeleccionado.getEstado())){
-					validar = true;
-				}
-				if(Util.isEmpty(this.idAreaMod) || Util.isEmpty(this.idClienteMod)){
-					validar = true;
-				}
-			}
-			//Actualizar
-			if(!validar){
-				//Re-asignar los valores de los combos
-				this.proyectoSeleccionado.setArea(new Area(this.idAreaMod));
-				this.proyectoSeleccionado.setCliente(new Cliente(this.idClienteMod));
-				this.proyectoSeleccionado.setFecha_Creacion_Proyecto(new Date());
-				//Ejecutar la actualizacion en BD
-				boolean result = ejbGenerico.actualizarObjeto(this.proyectoSeleccionado);
-				if(result){
-					Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizaron los datos del proyecto exitosamente.");
-					limpiar();
-					cargarListaProyectos();
-				}else{
-					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando los datos del proyecto, por favor intentelo de nuevo más tarde.");
-				}
-			}else{
-				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
-			}
-		} catch (Exception e) {
-			Mensaje.mostrarMensaje(Mensaje.FATAL, "Ha ocurrido una excepción, intentelo de nuevo más tarde. Si el error persiste contacte a su administrador.");
 			e.printStackTrace();
 		}
 	}
@@ -360,7 +358,7 @@ public class ProyectosBean implements Serializable {
 		}
 	}
 	
-	public void guardarCambiosProyecto(){
+	public String guardarCambiosProyecto(){
 		try {
 
 			//Validar campos vacios
@@ -372,86 +370,12 @@ public class ProyectosBean implements Serializable {
 				validar = true;
 			}
 			
-			if(this.caracterControl == 'E' && this.proyectoSeleccionado!=null && !Util.isEmpty(this.proyectoSeleccionado.getId_Proyecto())){
+			if(this.caracterControl == 'E' && !validar && editarProyecto()){
+				return "control-proyectos";
 				
-				proyectoSeleccionado.setCliente(new Cliente(this.idCliente));
-				proyectoSeleccionado.setArea(new Area(this.idArea));
-				proyectoSeleccionado.setFecha_Creacion_Proyecto(new Date());
-				if(sesionBean.getUsuario() != null){
-					proyectoSeleccionado.setUsuario(sesionBean.getUsuario());						
-				}
+			}else if(this.caracterControl == 'R' && !validar && registrarProyecto()){
+				return "control-proyectos";
 				
-				//Registrar proyecto
-				boolean resActualizacion = ejbGenerico.actualizarObjeto(proyectoSeleccionado);
-				if(resActualizacion){
-					//Eliminar relaciones de documentos asociados
-					if(ejbProyectos.quitarDocumentos(listaDocumentosAsocEliminar)){
-						System.out.println("Se quitaron los documentos asociados al proyecto");
-					}
-					//Agregar los nuevos documentos
-					List<DocumentoAsociado> temp = new ArrayList<>();
-					for (int j = 0; j < listaDocumentosAsociados.size(); j++) {
-						DocumentoAsociado doc = listaDocumentosAsociados.get(j);
-						//Solo se deben agregar los nuevos docuemtnos
-						if(doc.getId_Documento_Asociado()==0){
-							doc.setProyecto(new Proyecto(proyectoSeleccionado.getId_Proyecto()));
-							doc.setUsuario(sesionBean.getUsuario());
-							temp.add(doc);
-						}
-					}
-					boolean resultado = ejbProyectos.asociarDocumentos(temp);
-					if(resultado){
-						Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizó el proyecto correctamente");
-						limpiar();
-						cargarListaProyectos();
-					}else{
-						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error asociando documentos del proyecto, por favor intentelo de nuevo más tarde.");
-					}
-				}else{
-					Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error actualizando el proyecto, por favor intentelo de nuevo más tarde.");
-				}
-				
-				
-			}else if(this.caracterControl == 'R'){
-				if(!validar){
-					//Validar si el nombre del proyecto ya existe
-					if(existeProyecto(listaProyectos, this.nombre)){
-						Mensaje.mostrarMensaje(Mensaje.ERROR, "Ya existe un proyecto con ese nombre.");
-					}else{
-						Proyecto proyecto = new Proyecto();
-						proyecto.setNombre_Proyecto(this.proyectoSeleccionado.getNombre_Proyecto());
-						proyecto.setDescripcion(this.proyectoSeleccionado.getDescripcion());
-						proyecto.setEstado(this.proyectoSeleccionado.getEstado());
-						proyecto.setCliente(new Cliente(this.idCliente));
-						proyecto.setArea(new Area(this.idArea));
-						proyecto.setFecha_Creacion_Proyecto(new Date());
-						if(sesionBean.getUsuario() != null){
-							proyecto.setUsuario(sesionBean.getUsuario());						
-						}
-						//Registrar proyecto
-						int id = ejbProyectos.crearProyecto(proyecto);
-						if(id!=0){
-							for (int j = 0; j < listaDocumentosAsociados.size(); j++) {
-								DocumentoAsociado doc = listaDocumentosAsociados.get(j);
-								doc.setProyecto(new Proyecto(id));
-								doc.setUsuario(sesionBean.getUsuario());
-								listaDocumentosAsociados.set(j, doc);
-							}
-							boolean resultado = ejbProyectos.asociarDocumentos(listaDocumentosAsociados);
-							if(resultado){
-								Mensaje.mostrarMensaje(Mensaje.INFO, "Se registró el proyecto correctamente");
-								limpiar();
-								cargarListaProyectos();
-							}else{
-								Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error asociando los documentos, por favor intentelo de nuevo más tarde.");
-							}
-						}else{
-							Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error creando el proyecto, por favor intentelo de nuevo más tarde.");
-						}
-					}
-				}else{
-					Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor verifique y vuelva a intentarlo");
-				}
 			}else{
 				Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error, por favor intentelo de nuevo más tarde.");
 			}
@@ -459,6 +383,7 @@ public class ProyectosBean implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return "";
 	}
 	
 	/*Formulario de carga de documentos*/
@@ -526,7 +451,7 @@ public class ProyectosBean implements Serializable {
 		try {
 			//Validar campos vacios
 			boolean validar = false;
-			if(this.documentoSeleccionado==null || Util.isEmpty(this.documentoSeleccionado.getNombre_Documento()) || this.tempBlob==null){
+			if(this.documentoSeleccionado==null || Util.isEmpty(this.nombreNuevoDocumento) || this.tempBlob==null){
 				validar = true;
 			}
 			//Validar si el nombre de usuario ya existe
@@ -595,29 +520,11 @@ public class ProyectosBean implements Serializable {
 	public void setProyectoSeleccionado(Proyecto proyectoSeleccionado) {
 		this.proyectoSeleccionado = proyectoSeleccionado;
 		if(proyectoSeleccionado.getArea()!=null){
-			this.idAreaMod = proyectoSeleccionado.getArea().getId_Area();
+			this.idArea = proyectoSeleccionado.getArea().getId_Area();
 		}
 		if(proyectoSeleccionado.getCliente()!=null){
-			this.idClienteMod = proyectoSeleccionado.getCliente().getId_Cliente();
+			this.idCliente = proyectoSeleccionado.getCliente().getId_Cliente();
 		}
-	}
-	public String getNombre() {
-		return nombre;
-	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-	public String getDescripcion() {
-		return descripcion;
-	}
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-	public String getEstado() {
-		return estado;
-	}
-	public void setEstado(String estado) {
-		this.estado = estado;
 	}
 	public int getIdArea() {
 		return idArea;
@@ -636,18 +543,6 @@ public class ProyectosBean implements Serializable {
 	}
 	public void setFiltroNombre(String filtroNombre) {
 		this.filtroNombre = filtroNombre;
-	}
-	public int getIdAreaMod() {
-		return idAreaMod;
-	}
-	public void setIdAreaMod(int idAreaMod) {
-		this.idAreaMod = idAreaMod;
-	}
-	public int getIdClienteMod() {
-		return idClienteMod;
-	}
-	public void setIdClienteMod(int idClienteMod) {
-		this.idClienteMod = idClienteMod;
 	}
 	public int getFiltroTipoDoc() {
 		return filtroTipoDoc;

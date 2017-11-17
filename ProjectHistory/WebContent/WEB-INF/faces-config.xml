@@ -43,6 +43,11 @@
 			<redirect />
 		</navigation-case>
 		<navigation-case>
+			<from-outcome>control-aprobaciones</from-outcome>
+			<to-view-id>/pages/Aprobar/controlAprobaciones.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
 			<from-outcome>reporte-plantillas</from-outcome>
 			<to-view-id>/pages/Reportes/reportePlantillas.xhtml</to-view-id>
 			<redirect />

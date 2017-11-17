@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" 
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="../../templates/defaultLayout.xhtml">
+	<ui:define name="title">
+		<h:outputText value="Aprobar o rechazar documentos" />
+	</ui:define>
+	
+	<!-- Título pantalla -->
+	<ui:define name="titulo">
+		<b:row>
+			<h2>Aprobar documentos</h2>
+		</b:row>
+	</ui:define>
+	<!-- Miga de pan -->
+	<ui:define name="breadcrumb">
+		<b:row>
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><h:link outcome="home">Inicio</h:link></li>
+			  <li class="breadcrumb-item active">Aprobar documentos</li>
+			</ol>
+		</b:row>
+	</ui:define>
+	
+	<!-- Contenido de página -->
+	<ui:define name="content">
+		<h:form id="form" styleClass="form-horizontal" >
+			
+			<b:row>
+				<b:column>
+					<b:panel collapsible="false" styleClass="panel-negro" >
+						<f:facet name="heading">
+							<i class="fa fa-filter" style="padding-right: 10px" />
+							<h:outputText value="Filtro de proyectos" />
+						</f:facet>
+						<b:row>
+							<b:column large-screen="5">
+								<h:outputLabel value="Digite el nombre del documento que desea filtrar" />
+							</b:column>
+							<b:column large-screen="5">
+								<b:inputText placeholder="Ej: Cronograma" value="#{aprobacionesBean.filtroDocumento}" maxlength="60" />
+							</b:column>
+							<b:column large-screen="2">
+								<b:commandButton value="Filtrar documentos" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{aprobacionesBean.filtrarDocumento}" update="form:tabla" />
+							</b:column>
+						</b:row>
+					</b:panel>
+				</b:column>
+			</b:row>
+			
+			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
+				<b:dataTable id="tabla" value="#{aprobacionesBean.listaDocumentos}" styleClass="no-length-menu" var="documento" lang="es" border="false" searching="false" pageLength="10">
+					<b:dataTableColumn label="Nombre documento" value="#{documento.nombre_Documento}" />
+					<b:dataTableColumn label="Fecha de cargue" value="#{documento.fecha_Cargue_Documento}" order="asc" />
+					<b:dataTableColumn label="Proyecto" value="#{documento.proyecto.nombre_Proyecto}" />
+					<b:dataTableColumn label="Cliente" value="#{documento.nombre_Documento}" />
+					<b:dataTableColumn label="Area" value="#{documento.nombre_Documento}" />
+					<b:dataTableColumn label="Usuario" value="#{documento.nombre_Documento}" />
+					<b:dataTableColumn label="Estado" value="#{documento.nombre_Documento}" />
+					
+					<b:dataTableColumn label="Opciones">
+						<p:commandLink ajax="false" styleClass="opciones-tabla" rendered="#{documento.tamanio_documento gt 0}" >
+							<b:iconAwesome name="download" tooltip="Descargar documento" />
+							<f:setPropertyActionListener value="#{documento}" target="#{aprobacionesBean.documentoSeleccionado}" />
+							<p:fileDownload value="#{aprobacionesBean.descargarDocumento()}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" >
+							<b:iconAwesome name="thumbs-o-up" tooltip="Aprobar" />
+							<f:setPropertyActionListener value="#{documento}" target="#{aprobacionesBean.documentoSeleccionado}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" >
+							<b:iconAwesome name="thumbs-o-down" tooltip="Rechazar" />
+							<f:setPropertyActionListener value="#{documento}" target="#{aprobacionesBean.documentoSeleccionado}" />
+						</p:commandLink>
+					</b:dataTableColumn>
+				</b:dataTable>
+			</b:row>
+			
+			<script>
+				$(document).ready( ocultarPrimeraFilaTabla() );
+			</script>
+		
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

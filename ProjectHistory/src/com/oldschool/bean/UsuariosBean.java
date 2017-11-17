@@ -44,6 +44,7 @@ public class UsuariosBean implements Serializable {
 	private String username;
 	private String pass;
 	private String rolesSeleccionados;
+	private String rolesSeleccionadosMod;
 	//Filtro usuario
 	private String filtroNombre;
 	private String filtroEstado;
@@ -67,6 +68,15 @@ public class UsuariosBean implements Serializable {
 		}
 	}
 	
+	private Rol obtenerRolPorNombre(String nombreRol){
+		for (Rol rol : listaRoles) {
+			if(rol.getNombre_Rol().equals(nombreRol)){
+				return rol;
+			}
+		}
+		return null;
+	}
+	
 	/*Métodos públicos*/
 	@PostConstruct
 	public void init(){
@@ -85,6 +95,7 @@ public class UsuariosBean implements Serializable {
 		this.pass = null;
 		this.filtroNombre = null;
 		this.rolesSeleccionados = null;
+		this.rolesSeleccionadosMod = null;
 	}
 	
 	public void crearUsuario(){
@@ -120,10 +131,8 @@ public class UsuariosBean implements Serializable {
 					//Roles
 					List<Rol> roles = new ArrayList<>();
 					String[] rolesStr = rolesSeleccionados.split(",");
-					for (String idRol : rolesStr) {
-						Rol rol = new Rol();
-						rol.setId_Rol( idRol.equals("0") ? 1 : Integer.valueOf(idRol) );
-						roles.add(rol);
+					for (String nombreRol : rolesStr) {
+						roles.add(obtenerRolPorNombre(nombreRol));
 					}
 					
 					//Usuario
@@ -138,7 +147,6 @@ public class UsuariosBean implements Serializable {
 					usuario.setRols(roles);
 					//Crear usuario
 					boolean resultado = ejbUsuarios.registrarUsuario(usuario);
-//					boolean resultado = ejbGenerico.agregarObjeto(usuario);
 					if(resultado){
 						Mensaje.mostrarMensaje(Mensaje.INFO, "Se registró el usuario correctamente");
 						limpiar();
@@ -197,11 +205,9 @@ public class UsuariosBean implements Serializable {
 			if(!validar){
 				//Roles
 				List<Rol> roles = new ArrayList<>();
-				String[] rolesStr = rolesSeleccionados.split(",");
-				for (String idRol : rolesStr) {
-					Rol rol = new Rol();
-					rol.setId_Rol( idRol.equals("0") ? 1 : Integer.valueOf(idRol) );
-					roles.add(rol);
+				String[] rolesStr = rolesSeleccionadosMod.split(",");
+				for (String nombreRol : rolesStr) {
+					roles.add(obtenerRolPorNombre(nombreRol));
 				}
 				usuarioSeleccionado.setRols(roles);
 				
@@ -256,17 +262,6 @@ public class UsuariosBean implements Serializable {
 		}
 	}
 	
-	public void cargarRoles(){
-		StringBuilder idRoles = new StringBuilder();
-		for (Rol rol : this.usuarioSeleccionado.getRols()) {
-			if(idRoles.length() != 0){
-				idRoles.append(", ");
-			}
-			idRoles.append( rol.getId_Rol() );
-		}
-		this.rolesSeleccionados = idRoles.toString();
-	}
-	
 	/*Get & Set*/
 	public SesionBean getSesionBean() {
 		return sesionBean;
@@ -291,6 +286,16 @@ public class UsuariosBean implements Serializable {
 	}
 	public void setUsuarioSeleccionado(Usuario usuarioSeleccionado) {
 		this.usuarioSeleccionado = usuarioSeleccionado;
+		if(this.usuarioSeleccionado.getRols()!=null){
+			StringBuilder nombresRoles = new StringBuilder();
+			for (Rol rol : this.usuarioSeleccionado.getRols()) {
+				if(nombresRoles.length() != 0){
+					nombresRoles.append(",");
+				}
+				nombresRoles.append( rol.getNombre_Rol() );
+			}
+			this.rolesSeleccionadosMod = nombresRoles.toString();
+		}
 	}
 	public String getNombre() {
 		return nombre;
@@ -340,4 +345,11 @@ public class UsuariosBean implements Serializable {
 	public void setRolesSeleccionados(String rolesSeleccionados) {
 		this.rolesSeleccionados = rolesSeleccionados;
 	}
+	public String getRolesSeleccionadosMod() {
+		return rolesSeleccionadosMod;
+	}
+	public void setRolesSeleccionadosMod(String rolesSeleccionadosMod) {
+		this.rolesSeleccionadosMod = rolesSeleccionadosMod;
+	}
+
 }

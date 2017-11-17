@@ -131,9 +131,9 @@
 							</b:row>
 								<b:row>
 									<b:column large-screen="12">
-										<b:selectOneMenu value="#{usuariosBean.rolesSeleccionados}" label="Seleccionar Rol">
-											<f:selectItems value="#{usuariosBean.listaRoles}" var="rol" itemLabel="#{rol.nombre_Rol}" itemValue="#{rol.id_Rol}" />
-										</b:selectOneMenu>
+										<b:selectMultiMenu value="#{usuariosBean.rolesSeleccionados}" id="roles-new" label="Seleccionar Rol" >
+											<f:selectItems value="#{usuariosBean.listaRoles}" var="rol" itemLabel="#{rol.nombre_Rol}" itemValue="#{rol.nombre_Rol}" />
+										</b:selectMultiMenu>
 									</b:column>
 								</b:row>
 			 			</b:column>
@@ -192,9 +192,9 @@
 						</b:row>
 						<b:row>
 							<b:column large-screen="12">
-								<b:selectOneMenu value="#{usuariosBean.rolesSeleccionados}" label="Seleccionar Rol">
-									<f:selectItems value="#{usuariosBean.listaRoles}" var="rol" itemLabel="#{rol.nombre_Rol}" itemValue="#{rol.id_Rol}" />
-								</b:selectOneMenu>
+								<b:selectMultiMenu value="#{usuariosBean.rolesSeleccionadosMod}" id="roles-mod" label="Seleccionar Rol" >
+									<f:selectItems value="#{usuariosBean.listaRoles}" var="rol" itemLabel="#{rol.nombre_Rol}" itemValue="#{rol.nombre_Rol}" />
+								</b:selectMultiMenu>
 							</b:column>
 						</b:row>
 		 			</b:column>

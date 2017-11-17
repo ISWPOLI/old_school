@@ -24,16 +24,17 @@
 				</b:dropMenu>
 			</c:if>
 			
+			<!-- MENU APROBADOR -->
+			<c:if test="#{loginBean.sesionBean.usuario.isAprobador()}">
+				<b:navLink value="Aprobar documentos" icon-awesome="check-square-o" outcome="control-aprobaciones" ></b:navLink>
+			</c:if>
+			
 			<!-- MENU CONSULTOR -->
 			<c:if test="#{loginBean.sesionBean.usuario.isConsultor()}">
 				<b:navLink value="Ver proyectos" icon-awesome="lightbulb-o" ></b:navLink>
 				<b:dropMenu icon-awesome="th" value="Reportes">
 					<b:navLink value="Plantillas mas usadas" icon-awesome="pie-chart" outcome="reporte-plantillas"></b:navLink>
 				</b:dropMenu>
-			</c:if>
-			
-			<!-- MENU APROBADOR -->
-			<c:if test="#{loginBean.sesionBean.usuario.isAprobador()}">
 			</c:if>
 			
 			<!-- SECCION DE USUARIO -->

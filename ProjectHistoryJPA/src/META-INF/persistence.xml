@@ -4,6 +4,7 @@
 		<jta-data-source>java:/ProjectHistory</jta-data-source>
 		<class>com.oldschool.model.Area</class>
 		<class>com.oldschool.model.Cliente</class>
+		<class>com.oldschool.model.Documento</class>
 		<class>com.oldschool.model.DocumentoAsociado</class>
 		<class>com.oldschool.model.Proyecto</class>
 		<class>com.oldschool.model.Rol</class>

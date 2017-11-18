@@ -57,31 +57,76 @@
 			
 			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
 				<b:dataTable id="tabla" value="#{aprobacionesBean.listaDocumentos}" styleClass="no-length-menu" var="documento" lang="es" border="false" searching="false" pageLength="10">
-					<b:dataTableColumn label="Nombre documento" value="#{documento.nombre_Documento}" />
-					<b:dataTableColumn label="Fecha de cargue" value="#{documento.fecha_Cargue_Documento}" order="asc" />
-					<b:dataTableColumn label="Proyecto" value="#{documento.proyecto.nombre_Proyecto}" />
-					<b:dataTableColumn label="Cliente" value="#{documento.nombre_Documento}" />
-					<b:dataTableColumn label="Area" value="#{documento.nombre_Documento}" />
-					<b:dataTableColumn label="Usuario" value="#{documento.nombre_Documento}" />
-					<b:dataTableColumn label="Estado" value="#{documento.nombre_Documento}" />
+					<b:dataTableColumn label="Nombre documento" value="#{documento.nombreDocumento}" />
+					<b:dataTableColumn label="Fecha de cargue" value="#{documento.fechaCargue}" order="desc" />
+					<b:dataTableColumn label="Proyecto" value="#{documento.documentoAsociado.proyecto.nombre_Proyecto}" />
+					<b:dataTableColumn label="Cliente" value="#{documento.documentoAsociado.proyecto.cliente.razon_Social}" />
+					<b:dataTableColumn label="Area" value="#{documento.documentoAsociado.proyecto.area.nombre_Area}" />
+					<b:dataTableColumn label="Usuario" value="#{documento.documentoAsociado.usuario.nombreCompleto}" />
 					
 					<b:dataTableColumn label="Opciones">
-						<p:commandLink ajax="false" styleClass="opciones-tabla" rendered="#{documento.tamanio_documento gt 0}" >
+						<p:commandLink ajax="false" styleClass="opciones-tabla" >
 							<b:iconAwesome name="download" tooltip="Descargar documento" />
 							<f:setPropertyActionListener value="#{documento}" target="#{aprobacionesBean.documentoSeleccionado}" />
 							<p:fileDownload value="#{aprobacionesBean.descargarDocumento()}" />
 						</p:commandLink>
 						<p:commandLink ajax="true" styleClass="opciones-tabla" >
-							<b:iconAwesome name="thumbs-o-up" tooltip="Aprobar" />
+							<b:iconAwesome name="thumbs-o-up" tooltip="Aprobar" oncomplete="$('.modalAprobar').modal()" update="form:modalAprobar" />
 							<f:setPropertyActionListener value="#{documento}" target="#{aprobacionesBean.documentoSeleccionado}" />
 						</p:commandLink>
 						<p:commandLink ajax="true" styleClass="opciones-tabla" >
-							<b:iconAwesome name="thumbs-o-down" tooltip="Rechazar" />
+							<b:iconAwesome name="thumbs-o-down" tooltip="Rechazar" oncomplete="$('.modalRechazar').modal()" update="form:modalRechazar"  />
 							<f:setPropertyActionListener value="#{documento}" target="#{aprobacionesBean.documentoSeleccionado}" />
 						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>
 			</b:row>
+			
+			<!-- MODAL APROBAR -->
+			<b:modal id="modalAprobar" title="Aprobar documento" styleClass="modalAprobar" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>Al <b>aprobar</b> este documento, se habilitará para la consulta/descarga y será el documento predeterminado 
+							del tipo documental <b>#{aprobacionesBean.documentoSeleccionado.documentoAsociado.tipoDocumento.nombre_Tipo_Documento}</b> 
+							del proyecto <b>#{aprobacionesBean.documentoSeleccionado.documentoAsociado.proyecto.nombre_Proyecto}</b></p>
+							<p>¿Está seguro que desea aprobar el documento <b>#{aprobacionesBean.documentoSeleccionado.nombreDocumento}</b>?</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Aprobar documento" look="success" styleClass="btn-success-blanco" icon-awesome="thumbs-o-up" action="#{aprobacionesBean.aprobarDocumento()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL RECHAZAR -->
+			<b:modal id="modalRechazar" title="Rechazara documento" styleClass="modalRechazar" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>Al <b>rechazar</b> este documento lo eliminará permanentemente del sistema.</p>
+							<p>¿Está seguro que desea rechazar el documento <b>#{aprobacionesBean.documentoSeleccionado.nombreDocumento}</b>?</p>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Rechazar documento" look="warning" styleClass="btn-warn-blanco" icon-awesome="thumbs-o-down" action="#{aprobacionesBean.descartarDocumento()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
 			
 			<script>
 				$(document).ready( ocultarPrimeraFilaTabla() );

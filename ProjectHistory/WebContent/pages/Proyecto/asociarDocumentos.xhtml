@@ -86,14 +86,13 @@
 					
 					<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
 						<b:dataTable id="tabla" value="#{proyectosBean.listaDocumentosAsociados}" styleClass="no-length-menu" var="documento" lang="es" border="false" searching="false" pageLength="10">
-							<b:dataTableColumn label="Nombre" value="#{documento.nombre_Documento}" order="asc" />
-							<b:dataTableColumn label="Tipo" value="#{documento.tipoDocumento.nombre_Tipo_Documento}" />
-							<b:dataTableColumn label="Fecha modificacion" value="#{documento.fecha_Cargue_Documento}" />
+							<b:dataTableColumn label="Tipo Documento" value="#{documento.tipoDocumento.nombre_Tipo_Documento}" order="asc" />
 							<b:dataTableColumn label="Autor" value="#{documento.usuario.nombreCompleto}" />
+							<b:dataTableColumn label="Ultimo cargue de archivos" value="#{documento.fechaModificacion}" />
 							
 							<b:dataTableColumn label="Opciones">
-								<p:commandLink ajax="false" styleClass="opciones-tabla" rendered="#{documento.tamanio_documento gt 0}" >
-									<b:iconAwesome name="download" tooltip="Descargar documento" />
+								<p:commandLink ajax="false" styleClass="opciones-tabla" >
+									<b:iconAwesome name="download" tooltip="Descargar documento" rendered="#{not empty documento.fechaModificacion}" />
 									<f:setPropertyActionListener value="#{documento}" target="#{proyectosBean.documentoSeleccionado}" />
 									<p:fileDownload value="#{proyectosBean.descargarDocumento()}" />
 								</p:commandLink>
@@ -131,7 +130,7 @@
 						<b:row>
 							<b:column large-screen="12" styleClass="form-group">
 								<b:inputText label="Ultima modificación" disabled="true"
-								value="#{proyectosBean.documentoSeleccionado.fecha_Cargue_Documento}" />
+								value="#{proyectosBean.documentoSeleccionado.fechaModificacion}" />
 							</b:column>
 						</b:row>
 						<b:row>

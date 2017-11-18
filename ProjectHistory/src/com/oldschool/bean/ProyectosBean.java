@@ -29,6 +29,7 @@ import com.oldschool.ejb.EjbGenericoLocal;
 import com.oldschool.ejb.EjbProyectosLocal;
 import com.oldschool.model.Area;
 import com.oldschool.model.Cliente;
+import com.oldschool.model.Documento;
 import com.oldschool.model.DocumentoAsociado;
 import com.oldschool.model.Proyecto;
 import com.oldschool.model.TipoDocumento;
@@ -399,29 +400,47 @@ public class ProyectosBean implements Serializable {
 		return "";
 	}
 	
-	@SuppressWarnings("resource")
+	@SuppressWarnings({ "unchecked", "resource" })
 	public StreamedContent descargarDocumento(){
 		StreamedContent download = new DefaultStreamedContent();
 		try {
-			if(this.documentoSeleccionado!=null && this.documentoSeleccionado.getDocumentoAsociado()!=null){
+			
+			if(documentoSeleccionado!=null && documentoSeleccionado.getId_Documento_Asociado()!=0){
 				
-				Blob blob = new SerialBlob( this.documentoSeleccionado.getDocumentoAsociado() );
-				InputStream is = blob.getBinaryStream();
+				//Buscar los documentos asociados y obtener el último
+				Map<String, Object> parametros = new HashMap<>();
+				parametros.put("id_Documento_Asociado", this.documentoSeleccionado.getId_Documento_Asociado());
+				//parametros.put("estado", Documento.ESTADO_APROBADO);
+				List<Documento> documentos = (List<Documento>)(List<?>)ejbGenerico.listarPorQuery(new Documento(), "findAprobadosByIdDocAsociado", parametros);
 				
-				String nombreArchivo = this.documentoSeleccionado.getNombre_Documento();
-				String pathArchivo = System.getProperty("java.io.tmpdir") + File.separator + nombreArchivo + "." + this.documentoSeleccionado.getTipo_archivo();
-				FileOutputStream fos = new FileOutputStream( pathArchivo );
-				int b = 0;
-				while ((b = is.read()) != -1){
-				    fos.write(b); 
+				if(documentos!=null && !documentos.isEmpty()){
+					//La lista esta ordenada por fecha, y se toma el registro aprobado mas reciente como predeterminado.
+					Documento docPredeterminado = documentos.get(0);
+					
+					Blob blob = new SerialBlob( docPredeterminado.getDocumento() );
+					InputStream is = blob.getBinaryStream();
+					
+					String nombreArchivo = docPredeterminado.getNombreDocumento();
+					String pathArchivo = System.getProperty("java.io.tmpdir") + File.separator + nombreArchivo + "." + docPredeterminado.getTipoArchivo();
+					FileOutputStream fos = new FileOutputStream( pathArchivo );
+					int b = 0;
+					while ((b = is.read()) != -1){
+						fos.write(b); 
+					}
+					
+					is.close();
+					fos.flush();
+					
+					InputStream stream = new FileInputStream( pathArchivo );
+					download = new DefaultStreamedContent(stream, Files.probeContentType( Paths.get(pathArchivo) ), docPredeterminado.getNombreDocumento() + "." + docPredeterminado.getTipoArchivo());
+					
+				}else{
+					Mensaje.mostrarMensaje("No se puede descargar el documento debido a que esta en proceso de aprobación.");
 				}
 				
-				is.close();
-				fos.flush();
-
-				InputStream stream = new FileInputStream( pathArchivo );
-				download = new DefaultStreamedContent(stream, Files.probeContentType( Paths.get(pathArchivo) ), this.documentoSeleccionado.getNombre_Documento() + "." + this.documentoSeleccionado.getTipo_archivo());
-				
+			}else{
+				Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error, por favor intentelo de nuevo más tarde.");
+				System.err.println("El objeto 'documentoSeleccionado' está vacío ");
 			}
 			
 		} catch (Exception e) {
@@ -459,19 +478,29 @@ public class ProyectosBean implements Serializable {
 				//Obtener extension de documentol
 				String[] nombreDoc = nombeArchivoCargado.split("\\.");
 				String extension = nombreDoc.length > 0 ? nombreDoc[nombreDoc.length-1] : "txt";
-				//Sobre cargar el objeto antes de guardarlo
-				documentoSeleccionado.setNombre_Documento(this.nombreNuevoDocumento);
-				documentoSeleccionado.setFecha_Cargue_Documento(new Date());
-				if(sesionBean.getUsuario() != null){
-					documentoSeleccionado.setUsuario(sesionBean.getUsuario());						
-				}
-				documentoSeleccionado.setDocumentoAsociado(this.tempBlob);
-				documentoSeleccionado.setTamanio_documento(this.tamanioDocumento);
-				documentoSeleccionado.setTipo_archivo(extension);
-				//Registrar plantilla
-				boolean resultado = ejbGenerico.actualizarObjeto(documentoSeleccionado);
-				if(resultado){
-					Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizó el documento correctamente");
+				
+				Date fechaActual = new Date();
+				
+				//Registrar documento y asociarlo al tipo de doc
+				Documento documento = new Documento();
+				documento.setNombreDocumento(this.nombreNuevoDocumento);
+				documento.setFechaCargue(fechaActual);
+				documento.setDocumento(this.tempBlob);
+				documento.setTamanioDocumento(this.tamanioDocumento);
+				documento.setTipoArchivo(extension);
+				documento.setEstado(Documento.ESTADO_PENDIENTE);
+				documento.setDocumentoAsociado(documentoSeleccionado);
+				
+				//Actualizar Usuario creador del documento
+				documentoSeleccionado.setUsuario(sesionBean.getUsuario());
+				//documentoSeleccionado.setFechaModificacion(fechaActual); //No se actualizará la fecha hasta que se apruebe el documento
+
+				//Registrar documento
+				if(ejbGenerico.agregarObjeto(documento)){
+					//Actualizar usuario creador
+					if(ejbGenerico.actualizarObjeto(documentoSeleccionado)){
+						Mensaje.mostrarMensaje(Mensaje.INFO, "Se cargó el documento, estará disponible para su descarga despues del proceso de aprobación.");
+					}
 					limpiarAsociacionForm();
 					cargarListaDocumentos(this.proyectoSeleccionado.getId_Proyecto());
 				}else{
@@ -573,9 +602,9 @@ public class ProyectosBean implements Serializable {
 	}
 	public void setDocumentoSeleccionado(DocumentoAsociado documentoSeleccionado) {
 		this.documentoSeleccionado = documentoSeleccionado;
-		if(!Util.isEmpty(this.documentoSeleccionado.getNombre_Documento())){
-			this.nombreNuevoDocumento = this.documentoSeleccionado.getNombre_Documento();
-		}
+//		if(!Util.isEmpty(this.documentoSeleccionado.getNombre_Documento())){
+//			this.nombreNuevoDocumento = this.documentoSeleccionado.getNombre_Documento();
+//		}
 	}
 	public char getCaracterControl() {
 		return caracterControl;

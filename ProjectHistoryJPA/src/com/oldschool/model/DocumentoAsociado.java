@@ -1,8 +1,20 @@
 package com.oldschool.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 
 /**
@@ -16,8 +28,7 @@ import java.util.Date;
 	@NamedQuery(name="DocumentoAsociado.findByProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :id_Proyecto"),
 	@NamedQuery(name="DocumentoAsociado.eliminarPorId", query="DELETE FROM DocumentoAsociado d WHERE d.id_Documento_Asociado = :ID"),
 	@NamedQuery(name="DocumentoAsociado.findByTipoDocumento", query="SELECT d FROM DocumentoAsociado d WHERE d.tipoDocumento.id_Tipo_Documento = :id_Tipo_Documento"),
-	@NamedQuery(name="DocumentoAsociado.findPendientes", query="SELECT d FROM DocumentoAsociado d WHERE d.estado = 'P' AND d.tamanio_documento > 0 "),
-	@NamedQuery(name="DocumentoAsociado.findPendientesPorNombre", query="SELECT d FROM DocumentoAsociado d WHERE d.estado = 'P' AND d.tamanio_documento > 0 AND LOWER(d.nombre_Documento) LIKE :nombre_Documento"),
+//	@NamedQuery(name="DocumentoAsociado.findPendientes", query="SELECT d FROM DocumentoAsociado d WHERE d.estado = 'P'"),
 })
 public class DocumentoAsociado implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -26,10 +37,15 @@ public class DocumentoAsociado implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id_Documento_Asociado;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fecha_Cargue_Documento;
-
-	private String nombre_Documento;
+	@Column(name="fecha_modificacion")
+	private Date fechaModificacion;
+	
+//	@Transient
+//	private boolean tieneDocAsociados;
+	
+	//bi-directional many-to-one association to Documento
+	@OneToMany(mappedBy="documentoAsociado")
+	private List<Documento> documentos;
 
 	//bi-directional many-to-one association to Proyecto
 	@ManyToOne
@@ -46,22 +62,6 @@ public class DocumentoAsociado implements Serializable {
 	@JoinColumn(name="Id_Usuario")
 	private Usuario usuario;
 
-	@Column(name="tamanio_documento")
-	private long tamanio_documento;
-	
-	@Lob
-	@Column(name="Documento_asociado")
-	private byte[] documentoAsociado;
-	
-	@Column(name="tipo_archivo")
-	private String tipo_archivo;
-	
-	public static final char ESTADO_PENDIENTE = 'P';
-	public static final char ESTADO_APROBADO = 'A';
-	
-	@Column(name="estado", length=1)
-	private String estado;
-	
 	public DocumentoAsociado() {
 	}
 
@@ -73,20 +73,26 @@ public class DocumentoAsociado implements Serializable {
 		this.id_Documento_Asociado = id_Documento_Asociado;
 	}
 
-	public Date getFecha_Cargue_Documento() {
-		return this.fecha_Cargue_Documento;
+	public List<Documento> getDocumentos() {
+		return this.documentos;
 	}
 
-	public void setFecha_Cargue_Documento(Date fecha_Cargue_Documento) {
-		this.fecha_Cargue_Documento = fecha_Cargue_Documento;
+	public void setDocumentos(List<Documento> documentos) {
+		this.documentos = documentos;
 	}
 
-	public String getNombre_Documento() {
-		return this.nombre_Documento;
+	public Documento addDocumento(Documento documento) {
+		getDocumentos().add(documento);
+		documento.setDocumentoAsociado(this);
+
+		return documento;
 	}
 
-	public void setNombre_Documento(String nombre_Documento) {
-		this.nombre_Documento = nombre_Documento;
+	public Documento removeDocumento(Documento documento) {
+		getDocumentos().remove(documento);
+		documento.setDocumentoAsociado(null);
+
+		return documento;
 	}
 
 	public Proyecto getProyecto() {
@@ -113,29 +119,23 @@ public class DocumentoAsociado implements Serializable {
 		this.usuario = usuario;
 	}
 
-	public byte[] getDocumentoAsociado() {
-		return documentoAsociado;
-	}
-	public void setDocumentoAsociado(byte[] documentoAsociado) {
-		this.documentoAsociado = documentoAsociado;
-	}
-	public long getTamanio_documento() {
-		return tamanio_documento;
-	}
-	public void setTamanio_documento(long tamanio_documento) {
-		this.tamanio_documento = tamanio_documento;
-	}
-	public String getTipo_archivo() {
-		return tipo_archivo;
-	}
-	public void setTipo_archivo(String tipo_archivo) {
-		this.tipo_archivo = tipo_archivo;
+	public Date getFechaModificacion() {
+		return fechaModificacion;
 	}
 	
-	public String getEstado() {
-		return estado;
+	public void setFechaModificacion(Date fechaModificacion) {
+		this.fechaModificacion = fechaModificacion;
 	}
-	public void setEstado(String estado) {
-		this.estado = estado;
+	
+	/*public boolean isTieneDocAsociados() {
+		if(this.documentos!=null && !this.documentos.isEmpty()){
+			tieneDocAsociados = true;
+		}
+		return tieneDocAsociados;
 	}
+	
+	public void setTieneDocAsociados(boolean tieneDocAsociados) {
+		this.tieneDocAsociados = tieneDocAsociados;
+	}*/
+	
 }

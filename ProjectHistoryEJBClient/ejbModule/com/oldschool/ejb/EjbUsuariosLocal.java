@@ -17,5 +17,5 @@ public interface EjbUsuariosLocal {
 	public boolean cambiarEstadoDeUsuario(int idUsuario, byte estado) throws Exception;
 
 	public boolean registrarUsuario(Usuario usuario) throws Exception;
-
+	public boolean cambiarPassword(Usuario usuario) throws Exception;
 }

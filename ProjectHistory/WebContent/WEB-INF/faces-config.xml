@@ -75,6 +75,11 @@
 			<to-view-id>/pages/Proyecto/asociarDocumentos.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>irHistoricoDocumentos</from-outcome>
+			<to-view-id>/pages/Proyecto/historicoDocumentos.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 	
 </faces-config>

@@ -18,8 +18,10 @@ import java.util.List;
 	@NamedQuery(name="Usuario.findIdByUser", query="SELECT u.id_usuario FROM Usuario u WHERE u.login = :login"),
 	@NamedQuery(name="Usuario.login", query="SELECT u FROM Usuario u WHERE u.login = :login AND u.contraseña = :pass AND u.activo = 1"),
 	@NamedQuery(name="Usuario.findByNombres", query="SELECT u FROM Usuario u WHERE LOWER(u.nombre_Usuario) LIKE :nombre OR LOWER(u.apellido) LIKE :apellido"),
-	@NamedQuery(name="Usuario.findByNombresYEstado", query="SELECT u FROM Usuario u WHERE (LOWER(u.nombre_Usuario) LIKE :nombre OR LOWER(u.apellido) LIKE :apellido) AND u.activo = :estado ")
-	
+	@NamedQuery(name="Usuario.findByNombresYEstado", query="SELECT u FROM Usuario u WHERE (LOWER(u.nombre_Usuario) LIKE :nombre OR LOWER(u.apellido) LIKE :apellido) AND u.activo = :estado "),
+})
+@NamedNativeQueries({
+	@NamedNativeQuery(name="Usuario.updatePassword", query="UPDATE usuario SET contraseña = ? WHERE Id_usuario = ?")
 })
 public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -56,7 +58,7 @@ public class Usuario implements Serializable {
 
 	//bi-directional many-to-many association to Rol
 	//@ManyToMany(mappedBy="usuarios")
-	@ManyToMany(mappedBy="usuarios", fetch=FetchType.EAGER)
+	@ManyToMany(mappedBy="usuarios", fetch=FetchType.LAZY)
 	private List<Rol> rols;
 
 	public Usuario() {

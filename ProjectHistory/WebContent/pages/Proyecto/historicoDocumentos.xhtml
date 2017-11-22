@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" 
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="../../templates/defaultLayout.xhtml">
+	<ui:define name="title">
+		<h:outputText value="Control de proyectos" />
+	</ui:define>
+	
+	<!-- Título pantalla -->
+	<ui:define name="titulo">
+		<b:row>
+			<h2>Historico de documentos de #{historicoDocumentosBean.proyectoSeleccionado.nombre_Proyecto}</h2>
+		</b:row>
+	</ui:define>
+	<!-- Miga de pan -->
+	<ui:define name="breadcrumb">
+		<b:row>
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><h:link outcome="home">Inicio</h:link></li>
+			  <li class="breadcrumb-item"><h:link outcome="control-proyectos">Control de proyectos</h:link></li>
+			  <li class="breadcrumb-item active">Historico de documentos</li>
+			</ol>
+		</b:row>
+	</ui:define>
+	
+	<!-- Contenido de página -->
+	<ui:define name="content">
+		<h:form id="form" styleClass="form-horizontal" >
+			
+			<b:row id="fila-tabla-sin-menu" style="margin-top:10px;">
+				<b:column large-screen="8">
+					<b:dataTable id="tabla" value="#{historicoDocumentosBean.documentosAsociados}" styleClass="no-length-menu" var="tipoDoc" lang="es" border="false" searching="false" pageLength="10">
+						<b:dataTableColumn label="Nombre" value="#{tipoDoc.tipoDocumento.nombre_Tipo_Documento}" order="asc" />
+						<b:dataTableColumn label="Ultima modificacion" value="#{tipoDoc.fechaModificacion}" />
+						<b:dataTableColumn label="Cantidad versiones" value="#{tipoDoc.cantDocumentos}" />
+						
+						<b:dataTableColumn label="Opciones">
+							<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalDescargar').modal()" update="form:modalDescargar">
+								<b:iconAwesome name="download" tooltip="Descargar versiones" />
+								<f:setPropertyActionListener value="#{tipoDoc}" target="#{historicoDocumentosBean.docAsociadoSeleccionado}" />
+							</p:commandLink>
+						</b:dataTableColumn>
+					</b:dataTable>
+				</b:column>
+				<b:column large-screen="4">
+					<p:chart id="grafico" type="pie" model="#{historicoDocumentosBean.reportePie}" responsive="true" />
+				</b:column>
+			</b:row>
+		
+			<!-- MODAL DESCARGAR VERSIONES -->
+			<b:modal id="modalDescargar" title="Re-activar usuario" styleClass="modalDescargar" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<p>A continuación se listan las diferentes versiones para el tipo de documento <b>#{historicoDocumentosBean.docAsociadoSeleccionado.tipoDocumento.nombre_Tipo_Documento}</b></p>
+							<p>Junto al nombre aparece el estado, ya que aquí también se pueden descargar las versiones pendientes por aprobar.</p>
+						</b:row>
+						<b:row>
+							<b:column>
+								<b:selectOneMenu value="#{historicoDocumentosBean.documentoSeleccionado}">
+									<f:selectItems value="#{historicoDocumentosBean.docAsociadoSeleccionado.documentos}" var="doc" itemValue="#{doc}" itemLabel="#{doc.nombreDescarga}" />
+								</b:selectOneMenu>
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cerrar" look="danger" styleClass="btn-danger-blanco" icon-awesome="times-circle" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Descargar documento" look="success" styleClass="btn-success-blanco" icon-awesome="download" dismiss="modal" >
+								<p:fileDownload value="#{historicoDocumentosBean.descargarDocumento()}" />
+							</b:commandButton>
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+		
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

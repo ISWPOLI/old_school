@@ -372,13 +372,15 @@ public class ProyectosBean implements Serializable {
 			}
 			
 			if(this.caracterControl == 'E' && !validar && editarProyecto()){
+				Mensaje.mostrarMensaje(Mensaje.INFO, "Se actualizó el proyecto correctamente. Será redireccionado en un momento.");
+				//TimeUnit.SECONDS.sleep(3);
 				return "control-proyectos";
-				
 			}else if(this.caracterControl == 'R' && !validar && registrarProyecto()){
+				Mensaje.mostrarMensaje(Mensaje.INFO, "Se registó el proyecto correctamente. Será redireccionado en un momento.");
+				//TimeUnit.SECONDS.sleep(3);
 				return "control-proyectos";
-				
 			}else{
-				Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error, por favor intentelo de nuevo más tarde.");
+				Mensaje.mostrarMensaje(Mensaje.WARN, "Hay campos vacíos, por favor diligencie los campos marcados con un *");
 			}
 			
 		} catch (Exception e) {
@@ -516,6 +518,16 @@ public class ProyectosBean implements Serializable {
 			e.printStackTrace();
 		}
 	
+	}
+	
+	
+	public String irHistoricoDocumentos(){
+		if(this.proyectoSeleccionado!=null && !Util.isEmpty(this.proyectoSeleccionado.getId_Proyecto())){
+			this.sesionBean.setProyectoSeleccinado(proyectoSeleccionado);
+			//Redireccionar
+			return "irHistoricoDocumentos";
+		}
+		return "";
 	}
 	
 	/*Get & Set*/

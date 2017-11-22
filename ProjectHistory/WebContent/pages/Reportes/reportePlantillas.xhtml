@@ -34,6 +34,7 @@
 	<ui:define name="content">
 		<h:form id="form" styleClass="form-horizontal">
 
+
 			<b:row>
 				<b:column large-screen="12">
 					<b:panel styleClass="panel-negro">
@@ -46,7 +47,7 @@
 							<b:column style="margin:0 15px;" >
 								<b:row>
 									<b:column large-screen="3">
-										<b:selectOneMenu id="comboAreas" value="#{reportePlantillasBean.areaSeleccionada}" tooltip="Areas" large-screen="12" >
+										<b:selectOneMenu id="comboAreas" value="#{reportePlantillasBean.areaSeleccionada}" tooltip="Areas" large-screen="12" label="Areas" >
 											<f:facet name="prepend"><b:iconAwesome name="briefcase" /></f:facet>
 											<f:selectItem itemLabel="Todas las areas" itemValue="#{reportePlantillasBean.nuevaArea}" />
 											<f:selectItems value="#{reportePlantillasBean.listaAreas}" var="area" itemLabel="#{area.nombre_Area}" itemValue="#{area}"/>
@@ -54,21 +55,21 @@
 									</b:column>
 									
 									<b:column large-screen="3">
-										<b:selectOneMenu id="comboProyectos" value="#{reportePlantillasBean.proyectoSeleccionado}" tooltip="Proyectos" large-screen="12" >
+										<b:selectOneMenu id="comboProyectos" value="#{reportePlantillasBean.proyectoSeleccionado}" tooltip="Proyectos" large-screen="12" label="Proyectos" >
 											<f:facet name="prepend"><b:iconAwesome name="briefcase" /></f:facet>
-											<f:selectItem itemLabel="Todas los proyectos" itemValue="#{reportePlantillasBean.nuevaProyecto}" />
+											<f:selectItem itemLabel="Todos los proyectos" itemValue="#{reportePlantillasBean.nuevaProyecto}" />
 											<f:selectItems value="#{reportePlantillasBean.listaProyectos}" var="proyecto" itemLabel="#{proyecto.nombre_Proyecto}" itemValue="#{proyecto}"/>
 										</b:selectOneMenu>
 									</b:column>
 							
 									<b:column large-screen="3">
-										<b:dateTimePicker value="#{reportePlantillasBean.fechaInicio}" large-screen="12" 
-											show-icon="true" placeholder="Fecha inicio" format="DD-MM-YYYY" show-button-panel="true" />
+										<b:dateTimePicker value="#{reportePlantillasBean.fechaInicio}" large-screen="12" show-date="false" allow-input-toggle="true" 
+											show-icon="false" placeholder="DD-MM-YYYY" format="DD-MM-YYYY" label="Fecha inicio" />
 									</b:column>
 							
 									<b:column large-screen="3">
-										<b:dateTimePicker value="#{reportePlantillasBean.fechaFin}" large-screen="12"
-											show-icon="true" placeholder="Fecha fin" format="DD-MM-YYYY" />
+										<b:dateTimePicker value="#{reportePlantillasBean.fechaFin}" large-screen="12" show-date="false" allow-input-toggle="true"
+											show-icon="false" placeholder="DD-MM-YYYY" format="DD-MM-YYYY" label="Fecha fin" />
 									</b:column>
 								</b:row>
 								
@@ -92,11 +93,8 @@
 				<b:column large-screen="8">
 					<b:dataTable id="table" value="#{reportePlantillasBean.listaReporte}" var="lista"
 						border="false" lang="es" searching="false">
-						<b:dataTableColumn label="Documento" value="#{lista.nombre_Tipo_Documento}"></b:dataTableColumn>
-						<b:dataTableColumn label="Proyecto" value="#{lista.nombre_Proyecto}"></b:dataTableColumn>
-						<b:dataTableColumn label="Fecha creación" value="#{lista.fecha_Creacion_Proyecto}"></b:dataTableColumn>
-						<b:dataTableColumn label="Cliente" value="#{lista.razon_Social}"></b:dataTableColumn>
-						<b:dataTableColumn label="Área" value="#{lista.nombre_Area}"></b:dataTableColumn>
+						<b:dataTableColumn label="Tipo documental" value="#{lista.nombre_Tipo_Documento}"></b:dataTableColumn>
+						<b:dataTableColumn label="Veces utilizado" value="#{lista.cantVecesUsada}"></b:dataTableColumn>
 					</b:dataTable>
 				</b:column>
 				<b:column large-screen="4">

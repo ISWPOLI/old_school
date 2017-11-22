@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,6 +16,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 /**
@@ -28,7 +30,14 @@ import javax.persistence.Table;
 	@NamedQuery(name="DocumentoAsociado.findByProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :id_Proyecto"),
 	@NamedQuery(name="DocumentoAsociado.eliminarPorId", query="DELETE FROM DocumentoAsociado d WHERE d.id_Documento_Asociado = :ID"),
 	@NamedQuery(name="DocumentoAsociado.findByTipoDocumento", query="SELECT d FROM DocumentoAsociado d WHERE d.tipoDocumento.id_Tipo_Documento = :id_Tipo_Documento"),
-//	@NamedQuery(name="DocumentoAsociado.findPendientes", query="SELECT d FROM DocumentoAsociado d WHERE d.estado = 'P'"),
+	/*Reporte*/
+//	@NamedQuery(name="DocumentoAsociado.findByArea", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.area.id_Area = :area"),
+//	@NamedQuery(name="DocumentoAsociado.findByAreaFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.area.id_Area = :area AND d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+//	@NamedQuery(name="DocumentoAsociado.findByAreaProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.area.id_Area = :area AND d.proyecto.id_Proyecto = :proyecto"),
+//	@NamedQuery(name="DocumentoAsociado.findByAreaProyectoFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.area.id_Area = :area AND d.proyecto.id_Proyecto = :proyecto AND d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+//	@NamedQuery(name="DocumentoAsociado.findByProyectoFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :ID AND d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+//	@NamedQuery(name="DocumentoAsociado.findByFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+	
 })
 public class DocumentoAsociado implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -43,8 +52,11 @@ public class DocumentoAsociado implements Serializable {
 //	@Transient
 //	private boolean tieneDocAsociados;
 	
+	@Transient
+	private int cantDocumentos;
+	
 	//bi-directional many-to-one association to Documento
-	@OneToMany(mappedBy="documentoAsociado")
+	@OneToMany(mappedBy="documentoAsociado", fetch=FetchType.EAGER)
 	private List<Documento> documentos;
 
 	//bi-directional many-to-one association to Proyecto
@@ -137,5 +149,16 @@ public class DocumentoAsociado implements Serializable {
 	public void setTieneDocAsociados(boolean tieneDocAsociados) {
 		this.tieneDocAsociados = tieneDocAsociados;
 	}*/
+	
+	public int getCantDocumentos() {
+		if(documentos!=null){
+			cantDocumentos = documentos.size(); 
+		}
+		return cantDocumentos;
+	}
+	
+	public void setCantDocumentos(int cantDocumentos) {
+		this.cantDocumentos = cantDocumentos;
+	}
 	
 }

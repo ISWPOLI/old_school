@@ -54,20 +54,20 @@
 							<div class="text-justify collapse in">
 								<p><b:inputText disabled="true" value="#{proyectosBean.proyectoSeleccionado.fecha_Creacion_Proyecto}" label="Fecha modificación" /></p>
 								<p>
-									<b:selectOneMenu value="#{proyectosBean.idCliente}" label="Cliente asociado" >
+									<b:selectOneMenu value="#{proyectosBean.idCliente}" label="Cliente asociado *" >
 										<f:selectItems value="#{proyectosBean.listaClientes}" var="cliente" itemLabel="#{cliente.razon_Social}" itemValue="#{cliente.id_Cliente}" />
 									</b:selectOneMenu>
 								</p>
 								<p>
-									<b:selectOneMenu value="#{proyectosBean.idArea}" label="Area encargada">
+									<b:selectOneMenu value="#{proyectosBean.idArea}" label="Area encargada *">
 										<f:selectItems value="#{proyectosBean.listaAreas}" var="area" itemLabel="#{area.nombre_Area}" itemValue="#{area.id_Area}" />
 									</b:selectOneMenu>
 								</p>
 								<p>
-									<b:inputText disabled="true" value="#{proyectosBean.proyectoSeleccionado.usuario.nombreCompleto}" label="Usuario creador" />
+									<b:inputText disabled="true" value="#{proyectosBean.proyectoSeleccionado.usuario.nombreCompleto}" label="Usuario creador *" />
 								</p>
 								<p>
-									<b:selectOneMenu value="#{proyectosBean.proyectoSeleccionado.estado}" label="Estado del proyecto">
+									<b:selectOneMenu value="#{proyectosBean.proyectoSeleccionado.estado}" label="Estado del proyecto *">
 										<f:selectItem itemValue="Pre-venta" itemLabel="Pre-venta" />
 										<f:selectItem itemValue="Inicio" itemLabel="Inicio" />
 										<f:selectItem itemValue="Desarrollo" itemLabel="Desarrollo" />

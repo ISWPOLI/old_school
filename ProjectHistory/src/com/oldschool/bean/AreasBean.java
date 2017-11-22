@@ -25,13 +25,14 @@ public class AreasBean implements Serializable {
 	/*Variables Bean*/
 	public static final String BEAN_NAME = "areasBean";
 	private static final long serialVersionUID = 1461272576618969285L;
+	//$ANALYSIS-IGNORE
 	@EJB private EjbGenericoLocal ejbGenerico;
 	
 	/*Variables de sesión*/
 	@ManagedProperty(value = "#{sesionBean}")
 	private SesionBean sesionBean;
 	
-	/*Variables*/
+	//$ANALYSIS-IGNORE
 	private List<Area> listaAreas;
 	private Area areaSeleccionada;
 	//Formulario de registro

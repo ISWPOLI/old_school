@@ -91,8 +91,8 @@
 							<b:dataTableColumn label="Ultimo cargue de archivos" value="#{documento.fechaModificacion}" />
 							
 							<b:dataTableColumn label="Opciones">
-								<p:commandLink ajax="false" styleClass="opciones-tabla" >
-									<b:iconAwesome name="download" tooltip="Descargar documento" rendered="#{not empty documento.fechaModificacion}" />
+								<p:commandLink ajax="false" styleClass="opciones-tabla" rendered="#{not empty documento.fechaModificacion}" >
+									<b:iconAwesome name="download" tooltip="Descargar documento" />
 									<f:setPropertyActionListener value="#{documento}" target="#{proyectosBean.documentoSeleccionado}" />
 									<p:fileDownload value="#{proyectosBean.descargarDocumento()}" />
 								</p:commandLink>
@@ -151,7 +151,7 @@
 							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
 						</b:column>
 						<b:column largeScreen="6">
-							<b:commandButton value="Editar" look="warning" styleClass="btn-warning-blanco" icon-awesome="pencil" action="#{proyectosBean.cargarDocumento()}" dismiss="modal" />
+							<b:commandButton value="Subir archivo" look="warning" styleClass="btn-warning-blanco" icon-awesome="upload" action="#{proyectosBean.cargarDocumento()}" dismiss="modal" />
 						</b:column>
 					</b:row>
 			    </f:facet>

@@ -10,6 +10,7 @@ import java.util.Date;
  * 
  */
 @Entity
+@Table(name="documento")
 @NamedQueries({
 	@NamedQuery(name="Documento.findAll", query="SELECT d FROM Documento d"),
 	@NamedQuery(name="Documento.findByIdDocAsociado", query="SELECT d FROM Documento d WHERE d.documentoAsociado.id_Documento_Asociado = :id_Documento_Asociado ORDER BY d.fechaCargue DESC"),
@@ -17,6 +18,7 @@ import java.util.Date;
 	@NamedQuery(name="Documento.findAprobadosByIdDocAsociado", query="SELECT d FROM Documento d WHERE d.documentoAsociado.id_Documento_Asociado = :id_Documento_Asociado AND d.estado = 'A' ORDER BY d.fechaAprobacion DESC"),
 	@NamedQuery(name="Documento.findByEstado", query="SELECT d FROM Documento d WHERE d.estado = :estado ORDER BY d.fechaCargue DESC"),
 	@NamedQuery(name="Documento.findByNombreYEstado", query="SELECT d FROM Documento d WHERE LOWER(d.nombreDocumento) LIKE :nombreDocumento AND d.estado = :estado ORDER BY d.fechaCargue DESC"),
+	@NamedQuery(name="Documento.findByIdProyecto", query="SELECT d FROM Documento d WHERE d.documentoAsociado.proyecto.id_Proyecto = :id_Proyecto AND d.estado = 'A' ORDER BY d.documentoAsociado.id_Documento_Asociado ASC "),
 	@NamedQuery(name="Documento.eliminarPorId", query="DELETE FROM Documento d WHERE d.idDocumento = :ID"),
 })
 public class Documento implements Serializable {
@@ -131,6 +133,20 @@ public class Documento implements Serializable {
 
 	public void setDocumentoAsociado(DocumentoAsociado documentoAsociado) {
 		this.documentoAsociado = documentoAsociado;
+	}
+	
+	public String getEstadoString(){
+		if(ESTADO_APROBADO.equals(estado)){
+			return "Aprobado";
+		}else if(ESTADO_PENDIENTE.equals(estado)){
+			return "Pendiente";
+		}else{
+			return "";
+		}
+	}
+	
+	public String getNombreDescarga(){
+		return nombreDocumento + "[" + getEstadoString() + "]";
 	}
 
 }

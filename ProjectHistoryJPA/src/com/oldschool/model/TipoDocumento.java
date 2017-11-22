@@ -10,10 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 /**
@@ -25,7 +28,24 @@ import javax.persistence.Table;
 @NamedQueries({
 	@NamedQuery(name="TipoDocumento.findAll", query="SELECT t FROM TipoDocumento t"),
 	@NamedQuery(name="TipoDocumento.findByNombre", query="SELECT t FROM TipoDocumento t WHERE LOWER(t.nombre_Tipo_Documento) LIKE :nombre_Tipo_Documento"),
-	@NamedQuery(name="TipoDocumento.eliminarPorId", query="DELETE FROM TipoDocumento t WHERE t.id_Tipo_Documento = :ID")
+	@NamedQuery(name="TipoDocumento.eliminarPorId", query="DELETE FROM TipoDocumento t WHERE t.id_Tipo_Documento = :ID"),
+	/*Reporte*/
+//	@NamedQuery(name="TipoDocumento.findByArea", query="SELECT t FROM TipoDocumento t JOIN t.documentoAsociados da ON t.id_Tipo_Documento = da.tipoDocumento "), //id_Area = :area
+//	@NamedQuery(name="TipoDocumento.findByAreaFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.area.id_Area = :area AND d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+//	@NamedQuery(name="TipoDocumento.findByAreaProyecto", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.area.id_Area = :area AND d.proyecto.id_Proyecto = :proyecto"),
+//	@NamedQuery(name="TipoDocumento.findByAreaProyectoFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.area.id_Area = :area AND d.proyecto.id_Proyecto = :proyecto AND d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+//	@NamedQuery(name="TipoDocumento.findByProyectoFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.proyecto.id_Proyecto = :ID AND d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+//	@NamedQuery(name="TipoDocumento.findByFechas", query="SELECT d FROM DocumentoAsociado d WHERE d.fechaModificacion BETWEEN :fechaIni AND :fechaFin"),
+})
+@NamedNativeQueries({
+	@NamedNativeQuery(name="TipoDocumento.findEveryReference", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
+	@NamedNativeQuery(name="TipoDocumento.findByArea", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento JOIN proyecto p ON da.Id_Proyecto = p.Id_Proyecto WHERE p.Id_Area = ? ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
+	@NamedNativeQuery(name="TipoDocumento.findByAreaFechas", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento JOIN proyecto p ON da.Id_Proyecto = p.Id_Proyecto  WHERE p.Id_Area = ? AND da.fecha_modificacion BETWEEN ? AND ? ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
+	@NamedNativeQuery(name="TipoDocumento.findByAreaProyecto", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento JOIN proyecto p ON da.Id_Proyecto = p.Id_Proyecto WHERE p.Id_Area = ? AND da.Id_Proyecto = ? ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
+	@NamedNativeQuery(name="TipoDocumento.findByAreaProyectoFechas", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento JOIN proyecto p ON da.Id_Proyecto = p.Id_Proyecto WHERE p.Id_Area = ? AND da.Id_Proyecto = ? AND da.fecha_modificacion BETWEEN ? AND ? ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
+	@NamedNativeQuery(name="TipoDocumento.findByProyecto", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento JOIN proyecto p ON da.Id_Proyecto = p.Id_Proyecto  WHERE da.Id_Proyecto = ? ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
+	@NamedNativeQuery(name="TipoDocumento.findByProyectoFechas", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento JOIN proyecto p ON da.Id_Proyecto = p.Id_Proyecto WHERE da.Id_Proyecto = ? AND da.fecha_modificacion BETWEEN ? AND ? ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
+	@NamedNativeQuery(name="TipoDocumento.findByFechas", query="SELECT td.* FROM tipo_documento td JOIN documento_asociado da ON td.Id_Tipo_Documento = da.Id_Tipo_Documento JOIN proyecto p ON da.Id_Proyecto = p.Id_Proyecto WHERE da.fecha_modificacion BETWEEN ? AND ? ORDER BY td.Id_Tipo_Documento", resultClass=TipoDocumento.class),
 })
 public class TipoDocumento implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -44,6 +64,9 @@ public class TipoDocumento implements Serializable {
 	
 	@Column(name="tamanio_documento")
 	private long tamanio_documento;
+	
+	@Transient
+	private int cantVecesUsada;
 	
 	@Lob
 	private byte[] plantilla;
@@ -120,6 +143,13 @@ public class TipoDocumento implements Serializable {
 		documentoAsociado.setTipoDocumento(null);
 
 		return documentoAsociado;
+	}
+	
+	public void setCantVecesUsada(int cantVecesUsada) {
+		this.cantVecesUsada = cantVecesUsada;
+	}
+	public int getCantVecesUsada() {
+		return cantVecesUsada;
 	}
 
 }

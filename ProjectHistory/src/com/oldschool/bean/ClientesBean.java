@@ -24,13 +24,14 @@ public class ClientesBean implements Serializable {
 	/*Variables Bean*/
 	public static final String BEAN_NAME = "clientesBean";
 	private static final long serialVersionUID = 1461272576618969285L;
+	//$ANALYSIS-IGNORE
 	@EJB private EjbGenericoLocal ejbGenerico;
 	
 	/*Variables de sesión*/
 	@ManagedProperty(value = "#{sesionBean}")
 	private SesionBean sesionBean;
 	
-	/*Variables*/
+	//$ANALYSIS-IGNORE
 	private List<Cliente> listaClientes;
 	private Cliente clienteSeleccionado;
 	//Formulario de registro

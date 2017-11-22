@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
+import com.oldschool.model.Proyecto;
 import com.oldschool.model.Usuario;
 
 @ManagedBean(name = SesionBean.BEAN_NAME)
@@ -24,6 +25,8 @@ public class SesionBean implements Serializable{
 	private Usuario usuario;
 	private String nombreUser;
 	
+	private Proyecto proyectoSeleccinado; //Historial
+	
 	public Usuario getUsuario() {
 		return usuario;
 	}
@@ -36,6 +39,13 @@ public class SesionBean implements Serializable{
 	}
 	public void setNombreUser(String nombreUser) {
 		this.nombreUser = nombreUser;
+	}
+	
+	public Proyecto getProyectoSeleccinado() {
+		return proyectoSeleccinado;
+	}
+	public void setProyectoSeleccinado(Proyecto proyectoSeleccinado) {
+		this.proyectoSeleccinado = proyectoSeleccinado;
 	}
 	
 }

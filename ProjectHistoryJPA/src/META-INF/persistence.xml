@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-	<persistence-unit name="ProjectHistoryJPA">
+	<persistence-unit name="ProjectHistoryJPA" transaction-type="JTA">
 		<jta-data-source>java:/ProjectHistory</jta-data-source>
 		<class>com.oldschool.model.Area</class>
 		<class>com.oldschool.model.Cliente</class>
@@ -11,5 +11,9 @@
 		<class>com.oldschool.model.TipoDocumento</class>
 		<class>com.oldschool.model.Usuario</class>
 		<class>com.oldschool.model.ReportePlantilla</class>
+		<properties>
+			<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+			<property name="current_session_context_class" value="thread" /> 
+		</properties>
 	</persistence-unit>
 </persistence>

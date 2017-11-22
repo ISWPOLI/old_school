@@ -75,12 +75,16 @@
 					<b:dataTableColumn label="Estado" value="#{usuario.activo==1? 'Activo' : 'Inactivo'}" />
 					<b:dataTableColumn label="Opciones">
 						<!-- USUARIOS ACTIVOS -->
-						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarUsuario').modal()" update="form:modalEditarUsuario" rendered="#{usuario.activo==1}" >
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalEditarUsuario').modal()" update="form:modalEditarUsuario" rendered="#{usuario.activo==1 &amp;&amp; usuario.id_usuario!=sesionBean.usuario.id_usuario}" >
 							<b:iconAwesome name="pencil" tooltip="Editar usuario" />
 							<f:setPropertyActionListener value="#{usuario}" target="#{usuariosBean.usuarioSeleccionado}" />
 						</p:commandLink>
-						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalInhabilitarUsuario').modal()" update="form:modalInhabilitarUsuario" rendered="#{usuario.activo==1}" >
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalInhabilitarUsuario').modal()" update="form:modalInhabilitarUsuario" rendered="#{usuario.activo==1 &amp;&amp; usuario.id_usuario!=sesionBean.usuario.id_usuario}" >
 							<b:iconAwesome name="hand-o-down" tooltip="Inhabilitar usuario" />
+							<f:setPropertyActionListener value="#{usuario}" target="#{usuariosBean.usuarioSeleccionado}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" oncomplete="$('.modalCambiarPassword').modal()" update="form:modalCambiarPassword" >
+							<b:iconAwesome name="key" tooltip="Cambiar contraseña" />
 							<f:setPropertyActionListener value="#{usuario}" target="#{usuariosBean.usuarioSeleccionado}" />
 						</p:commandLink>
 						<!-- USUARIOS INACTIVOS -->
@@ -254,6 +258,36 @@
 						</b:column>
 						<b:column largeScreen="6">
 							<b:commandButton value="Re-Activar Usuario" look="success" styleClass="btn-success-blanco" icon-awesome="hand-o-up" action="#{usuariosBean.reactivarUsuario()}" dismiss="modal" />
+						</b:column>
+					</b:row>
+			    </f:facet>
+			</b:modal>
+			
+			<!-- MODAL CAMBIAR CONTRASENIA -->
+			<b:modal id="modalCambiarPassword" title="Cambiar contraseña usuario" styleClass="modalCambiarPassword" >
+				<b:row>
+					<b:column large-screen="10" offset="1">
+						<b:row>
+							<b:column large-screen="6"><label>Nueva contraseña (*)</label></b:column>
+							<b:column large-screen="6" styleClass="form-group">
+								<b:inputSecret placeholder="Nueva contraseña" value="#{usuariosBean.pass}" maxlength="20" />
+							</b:column>
+						</b:row>
+						<b:row>
+							<b:column large-screen="6"><label>Confirmar contraseña (*)</label></b:column>
+							<b:column large-screen="6" styleClass="form-group">
+								<b:inputSecret placeholder="Confirmar contraseña" value="#{usuariosBean.confirmarPass}" maxlength="20" />
+							</b:column>
+						</b:row>
+		 			</b:column>
+	 			</b:row>
+			    <f:facet name="footer">
+					<b:row>
+						<b:column largeScreen="6">
+							<b:button value="Cancelar" look="danger" styleClass="btn-danger-blanco" icon-awesome="ban" dismiss="modal" />
+						</b:column>
+						<b:column largeScreen="6">
+							<b:commandButton value="Camibiar contraseña" look="warning" styleClass="btn-warning-blanco" icon-awesome="key" action="#{usuariosBean.cambiarPassword()}" dismiss="modal" />
 						</b:column>
 					</b:row>
 			    </f:facet>

@@ -37,13 +37,14 @@ public class AprobacionesBean implements Serializable {
 	/*Variables Bean*/
 	public static final String BEAN_NAME = "aprobacionesBean";
 	private static final long serialVersionUID = 1461272576618969285L;
+	//$ANALYSIS-IGNORE
 	@EJB private EjbGenericoLocal ejbGenerico;
 	
 	/*Variables de sesión*/
 	@ManagedProperty(value = "#{sesionBean}")
 	private SesionBean sesionBean;
 	
-	/*Variables*/
+	//$ANALYSIS-IGNORE
 	private List<Documento> listaDocumentos;
 	private Documento documentoSeleccionado;
 	//Filtro usuario

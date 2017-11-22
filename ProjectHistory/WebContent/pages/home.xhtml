@@ -25,10 +25,10 @@
 							<p class="text-justify">En este módulo usted encontrará todos los proyectos cargados en el sistema. Así mismo podrá gestionarlos y generar reportes sobre ellos.</p>
 							<p class="text-justify">Para acceder de forma r&aacute;pida a este m&oacute;dulo de clic en el bot&oacute;n de la parte inferior.</p>
 						</div>
-						<h:link>Ir al m&oacute;dulo</h:link>
+						<h:link outcome="control-proyectos">Ir al m&oacute;dulo</h:link>
 					</div>
 				</b:column>
-				<b:column col-lg="3">
+				<b:column col-lg="3" rendered="#{loginBean.sesionBean.usuario.isAdmin()}">
 					<div class="panel panel-default panel-verde">
 						<div class="panel-heading">Clientes</div>
 						<div class="panel-body">
@@ -36,20 +36,20 @@
 							<p class="text-justify">Para acceder de forma r&aacute;pida a este m&oacute;dulo de clic en el bot&oacute;n de la parte inferior.</p>
 							<br />
 						</div>
-						<h:link>Ir al módulo</h:link>
+						<h:link outcome="control-clientes">Ir al módulo</h:link>
 					</div>
 				</b:column>
-				<b:column col-lg="3">
+				<b:column col-lg="3" rendered="#{loginBean.sesionBean.usuario.isAdmin()}">
 					<div class="panel panel-default panel-rojo">
 						<div class="panel-heading">Usuarios</div>
 						<div class="panel-body">
 							<p class="text-justify">En este módulo usted encontrará toda la información de los usuarios del sistema. Puede crear, modificar, filtrar e inhabilitar usuarios desde aquí.</p>
 							<p class="text-justify">Para acceder de forma r&aacute;pida a este m&oacute;dulo de clic en el bot&oacute;n de la parte inferior.</p>
 						</div>
-						<h:link>Ir al m&oacute;dulo</h:link>
+						<h:link outcome="control-usuarios">Ir al m&oacute;dulo</h:link>
 					</div>
 				</b:column>
-				<b:column col-lg="3">
+				<b:column col-lg="3" rendered="#{loginBean.sesionBean.usuario.isAprobador() || loginBean.sesionBean.usuario.isAdmin()}">
 					<div class="panel panel-default panel-amarillo">
 						<div class="panel-heading">Reportes</div>
 						<div class="panel-body">
@@ -58,7 +58,7 @@
 							<br />
 							<br />
 						</div>
-						<h:link>Quiero conocer m&aacute;s</h:link>
+						<h:link outcome="reporte-plantillas">Quiero conocer m&aacute;s</h:link>
 					</div>
 				</b:column>
 			</b:row>

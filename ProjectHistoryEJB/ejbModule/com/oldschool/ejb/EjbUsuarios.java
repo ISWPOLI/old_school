@@ -138,4 +138,17 @@ public class EjbUsuarios implements EjbUsuariosLocal {
 		return false;
 	}
 	
+	@Override
+	public boolean cambiarPassword(Usuario usuario) throws Exception {
+		Query query = em.createNamedQuery("Usuario.updatePassword");
+		query.setParameter(1, usuario.getContraseña());
+		query.setParameter(2, usuario.getId_usuario());
+		int result = query.executeUpdate();
+		if(result > 0){
+			return true;
+		}
+		
+		return false;
+	}
+	
 }

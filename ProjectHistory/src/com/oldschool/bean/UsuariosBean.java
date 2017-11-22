@@ -45,6 +45,8 @@ public class UsuariosBean implements Serializable {
 	private String pass;
 	private String rolesSeleccionados;
 	private String rolesSeleccionadosMod;
+	//Cambiar contraseña
+	private String confirmarPass;
 	//Filtro usuario
 	private String filtroNombre;
 	private String filtroEstado;
@@ -93,6 +95,7 @@ public class UsuariosBean implements Serializable {
 		this.genero = null;
 		this.username = null;
 		this.pass = null;
+		this.confirmarPass = null;
 		this.filtroNombre = null;
 		this.rolesSeleccionados = null;
 		this.rolesSeleccionadosMod = null;
@@ -262,6 +265,37 @@ public class UsuariosBean implements Serializable {
 		}
 	}
 	
+	public void cambiarPassword(){
+		try {
+			if(this.usuarioSeleccionado!=null && this.usuarioSeleccionado.getId_usuario()!=0 && !Util.isEmpty(this.usuarioSeleccionado.getLogin())){
+				//Validar contraseñas
+				if(Util.isEmpty(pass) || Util.isEmpty(confirmarPass)){
+					Mensaje.mostrarMensaje(Mensaje.WARN, "No pueden haber campos vacíos.");
+				}else{
+					//Comparar si las contraseñas son iguales
+					if(pass.equals(confirmarPass)){
+						String encPass = Util.encriptarPass(this.usuarioSeleccionado.getLogin(), this.pass);
+						this.usuarioSeleccionado.setContraseña(encPass);
+						boolean resultado = ejbUsuarios.cambiarPassword(usuarioSeleccionado);
+						if(resultado){
+							Mensaje.mostrarMensaje(Mensaje.INFO, "Se cambió la contraseña correctamente.");
+						}else{
+							Mensaje.mostrarMensaje(Mensaje.ERROR, "Ha ocurrido un error cambiando la contraseña, por favor intente de nuevo.");
+						}
+					}else{
+						Mensaje.mostrarMensaje(Mensaje.WARN, "Las contraseñas no coinciden, intentelo de nuevo.");
+					}
+				}
+			}
+			
+			limpiar();
+			cargarListaUsuarios(Usuario.ESTADO_ACTIVO);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/*Get & Set*/
 	public SesionBean getSesionBean() {
 		return sesionBean;
@@ -351,5 +385,11 @@ public class UsuariosBean implements Serializable {
 	public void setRolesSeleccionadosMod(String rolesSeleccionadosMod) {
 		this.rolesSeleccionadosMod = rolesSeleccionadosMod;
 	}
-
+	public String getConfirmarPass() {
+		return confirmarPass;
+	}
+	public void setConfirmarPass(String confirmarPass) {
+		this.confirmarPass = confirmarPass;
+	}
+	
 }

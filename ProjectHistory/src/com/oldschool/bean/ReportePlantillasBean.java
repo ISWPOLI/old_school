@@ -17,7 +17,7 @@ import org.primefaces.model.chart.PieChartModel;
 import com.oldschool.ejb.EjbGenericoLocal;
 import com.oldschool.model.Area;
 import com.oldschool.model.Proyecto;
-import com.oldschool.model.ReportePlantilla;
+import com.oldschool.model.TipoDocumento;
 
 @ManagedBean(name= ReportePlantillasBean.BEAN_NAME)
 @ViewScoped
@@ -31,7 +31,8 @@ public class ReportePlantillasBean implements Serializable{
 	/*Variables*/
 	private List<Proyecto> listaProyectos;
 	private List<Area> listaAreas;
-	private List<ReportePlantilla> listaReporte;
+//	private List<ReportePlantilla> listaReporte;
+	List<TipoDocumento> listaReporte;
 	private PieChartModel reportePie;
 	//Filtros
 	private Date fechaInicio;
@@ -59,6 +60,32 @@ public class ReportePlantillasBean implements Serializable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private List<TipoDocumento> analizarLista(List<TipoDocumento> lista){
+		List<TipoDocumento> listaSalida = new ArrayList<>();
+		//Se valida que la lista no esté vacía
+		if(lista!=null && !lista.isEmpty()){
+			TipoDocumento temp = lista.get(0);	//Empezar en el primer registro de la lista
+			int contador = 0;
+			for (int i = 0; i < lista.size(); i++) {
+				TipoDocumento tipoDocumento = lista.get(i);
+				if(temp.getId_Tipo_Documento() != tipoDocumento.getId_Tipo_Documento()){
+					//Asignar el objeto a la lista
+					listaSalida.add(temp);
+					//Cambiar de temporal
+					temp = tipoDocumento;
+					//reiniciar contador en 0
+					contador = 0;
+				}
+				//En cada iteración va aumentando el contador
+				temp.setCantVecesUsada(++contador);
+			}
+			//La última iteracion tambien se debe agregar a la lista de salida
+			listaSalida.add(temp);
+		}
+		//Se retorna la lista
+		return listaSalida;
 	}
 	
 	/*Métodos públicos*/
@@ -97,53 +124,65 @@ public class ReportePlantillasBean implements Serializable{
 	@SuppressWarnings("unchecked")
 	public void cargarReporte(){
 		try {
-			
+			Map<Integer, Object> parametros = new HashMap<Integer, Object>();
+			//Comprobar si hay filtro de area
 			if(this.areaSeleccionada!=null && this.areaSeleccionada.getId_Area()!=0){
 				
-				Map<String, Object> parametros = new HashMap<String, Object>();
-				parametros.put("area", this.areaSeleccionada.getId_Area());
+				parametros.put(1, this.areaSeleccionada.getId_Area());
 				
 				if(this.proyectoSeleccionado!=null & this.proyectoSeleccionado.getId_Proyecto()!=0){
-					parametros.put("proyecto", this.proyectoSeleccionado.getId_Proyecto());
+					parametros.put(2, this.proyectoSeleccionado.getId_Proyecto());
 					
+					//Busca por con todos los filtros
 					if(this.fechaInicio!=null && this.fechaFin!=null && this.fechaInicio.compareTo(fechaFin) < 0){
-						parametros.put("fechaIni", this.fechaInicio);
-						parametros.put("fechaFin", this.fechaFin);
-						this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarPorQuery(new ReportePlantilla(), "findByAreaProyectoFechas", parametros);
-					}else{
-						this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarPorQuery(new ReportePlantilla(), "findByAreaProyecto", parametros);
+						parametros.put(3, this.fechaInicio);
+						parametros.put(4, this.fechaFin);
+						this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findByAreaProyectoFechas", parametros);
+					}
+					//Busca por área y proyecto
+					else{
+						this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findByAreaProyecto", parametros);
 					}
 					
-				} else if(this.fechaInicio!=null && this.fechaFin!=null && this.fechaInicio.compareTo(fechaFin) < 0){
-					parametros.put("fechaIni", this.fechaInicio);
-					parametros.put("fechaFin", this.fechaFin);
-					this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarPorQuery(new ReportePlantilla(), "findByAreaFechas", parametros);
-				} else{
-					this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarPorQuery(new ReportePlantilla(), "findByArea", parametros);
 				}
+				// Busca por área y fecha de modificación
+				else if(this.fechaInicio!=null && this.fechaFin!=null && this.fechaInicio.compareTo(fechaFin) < 0){
+					parametros.put(2, this.fechaInicio);
+					parametros.put(3, this.fechaFin);
+					this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findByAreaFechas", parametros);
+				}
+				//Solo busca el por área
+				else{
+					this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findByArea", parametros);
+				}
+			}
+			//Comprobar si hay filtro de proyecto
+			else if(this.proyectoSeleccionado!=null & this.proyectoSeleccionado.getId_Proyecto()!=0){
 				
-			} else if(this.proyectoSeleccionado!=null & this.proyectoSeleccionado.getId_Proyecto()!=0){
-				
-				Map<String, Object> parametros = new HashMap<String, Object>();
-				parametros.put("proyecto", this.proyectoSeleccionado.getId_Proyecto());
+				parametros.put(1, this.proyectoSeleccionado.getId_Proyecto());
 				
 				if(this.fechaInicio!=null && this.fechaFin!=null && this.fechaInicio.compareTo(fechaFin) < 0){
-					parametros.put("fechaIni", this.fechaInicio);
-					parametros.put("fechaFin", this.fechaFin);
-					this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarPorQuery(new ReportePlantilla(), "findByProyectoFechas", parametros);
+					parametros.put(2, this.fechaInicio);
+					parametros.put(3, this.fechaFin);
+					this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findByProyectoFechas", parametros);
 				}else{
-					this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarPorQuery(new ReportePlantilla(), "findByProyecto", parametros);
+					this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findByProyecto", parametros);
 				}
 				
-			}else if(this.fechaInicio!=null && this.fechaFin!=null && this.fechaInicio.compareTo(fechaFin) < 0){
-				Map<String, Object> parametros = new HashMap<String, Object>();
-				parametros.put("fechaIni", this.fechaInicio);
-				parametros.put("fechaFin", this.fechaFin);
-				
-				this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarPorQuery(new ReportePlantilla(), "findByFechas", parametros);
-			}else{
-				this.listaReporte = (List<ReportePlantilla>)(List<?>)ejbGenerico.listarTodo(new ReportePlantilla());
 			}
+			//Comprobar si hay filtro de fechas
+			else if(this.fechaInicio!=null && this.fechaFin!=null && this.fechaInicio.compareTo(fechaFin) < 0){
+				parametros.put(1, this.fechaInicio);
+				parametros.put(2, this.fechaFin);
+				this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findByFechas", parametros);
+			}
+			//No hay ningun filtro aplicado, listar todo
+			else{
+				this.listaReporte = (List<TipoDocumento>)(List<?>)ejbGenerico.listarPorNativeQuery(new TipoDocumento(), "findEveryReference", new HashMap<>());
+				//listaReporte = (List<TipoDocumento>)(List<?>) ejbGenerico.listarTodo(new TipoDocumento());
+			}
+			
+			this.listaReporte = analizarLista(this.listaReporte);
 			
 			generarReporte();
 			
@@ -156,9 +195,9 @@ public class ReportePlantillasBean implements Serializable{
 		reportePie = new PieChartModel();
 		
 		if(listaReporte!=null && !listaReporte.isEmpty()){
-			for (ReportePlantilla reporte: listaReporte) {
-				String titulo = reporte.getNombre_Tipo_Documento() + "[" + reporte.getCantidad().toString() + "]";
-				reportePie.set(titulo, reporte.getCantidad());
+			for (TipoDocumento reporte: listaReporte) {
+				String titulo = reporte.getNombre_Tipo_Documento() + "[" + reporte.getCantVecesUsada() + "]";
+				reportePie.set(titulo, reporte.getCantVecesUsada());
 			}
 		}else{
 			reportePie.set("Sin resultados", 0);
@@ -182,10 +221,10 @@ public class ReportePlantillasBean implements Serializable{
 	public void setListaAreas(List<Area> listaAreas) {
 		this.listaAreas = listaAreas;
 	}
-	public List<ReportePlantilla> getListaReporte() {
+	public List<TipoDocumento> getListaReporte() {
 		return listaReporte;
 	}
-	public void setListaReporte(List<ReportePlantilla> listaReporte) {
+	public void setListaReporte(List<TipoDocumento> listaReporte) {
 		this.listaReporte = listaReporte;
 	}
 	public PieChartModel getReportePie() {

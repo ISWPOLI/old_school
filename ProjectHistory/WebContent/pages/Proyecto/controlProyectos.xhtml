@@ -51,7 +51,7 @@
 								<b:commandButton value="Filtrar proyectos" look="primary" class="btn-primary-blanco" iconAwesome="search" action="#{proyectosBean.filtrarProyectos()}" update="form:tabla" />
 							</b:column>
 							<b:column largeScreen="2">
-								<b:commandButton value="Nuevo proyecto" look="success" class="btn-success-blanco" iconAwesome="user-plus" action="#{proyectosBean.irControlProyecto()}" >
+								<b:commandButton value="Nuevo proyecto" look="success" class="btn-success-blanco" iconAwesome="user-plus" action="#{proyectosBean.irControlProyecto()}" rendered="#{loginBean.sesionBean.usuario.isAdmin()}" >
 									<f:setPropertyActionListener value="R" target="#{proyectosBean.caracterControl}" />
 								</b:commandButton>
 							</b:column>
@@ -74,9 +74,13 @@
 							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
 						</p:commandLink>
 						<p:commandLink ajax="true" styleClass="opciones-tabla" action="#{proyectosBean.irControlProyecto}" >
-							<b:iconAwesome name="pencil" tooltip="Editar proyecto" />
+							<b:iconAwesome name="pencil" tooltip="Editar proyecto" rendered="#{loginBean.sesionBean.usuario.isAdmin()}" />
 							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
 							<f:setPropertyActionListener value="E" target="#{proyectosBean.caracterControl}" />
+						</p:commandLink>
+						<p:commandLink ajax="true" styleClass="opciones-tabla" action="#{proyectosBean.irHistoricoDocumentos}" >
+							<b:iconAwesome name="history" tooltip="Historico de documentos" />
+							<f:setPropertyActionListener value="#{proyecto}" target="#{proyectosBean.proyectoSeleccionado}" />
 						</p:commandLink>
 					</b:dataTableColumn>
 				</b:dataTable>
